@@ -17,17 +17,17 @@
             <Insets bottom="30.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="txtUsername" maxWidth="250.0" promptText="Username">
+      <TextField fx:id="txtUsername" maxWidth="250.0" onAction="#enterPressed" promptText="Username">
          <VBox.margin>
             <Insets bottom="10.0" />
          </VBox.margin>
       </TextField>
-      <PasswordField fx:id="txtPassword" maxWidth="250.0" promptText="Password">
+      <PasswordField fx:id="txtPassword" maxWidth="250.0" onAction="#enterPressed" promptText="Password">
          <VBox.margin>
             <Insets bottom="30.0" />
          </VBox.margin>
       </PasswordField>
-      <Button fx:id="loginButton" alignment="CENTER" mnemonicParsing="false" text="Login" />
+      <Button fx:id="loginButton" alignment="CENTER" mnemonicParsing="false" onAction="#enterPressed" text="Login" />
       <ProgressIndicator fx:id="loading" progress="-1" visible="false" />
    </children>
 </VBox>
