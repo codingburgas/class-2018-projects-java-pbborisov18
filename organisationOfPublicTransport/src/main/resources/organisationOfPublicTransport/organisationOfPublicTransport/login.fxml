@@ -10,7 +10,7 @@
 
 <!-- stylesheets="@css/login.css"-->
 
-<VBox fx:id="vBoxLogin" alignment="CENTER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<VBox fx:id="vBoxLogin" alignment="CENTER" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organisationOfPublicTransport.organisationOfPublicTransport.LoginController">
    <children>
       <Label id="textLoginPage" alignment="CENTER" text="Organisation of public transport">
          <VBox.margin>
