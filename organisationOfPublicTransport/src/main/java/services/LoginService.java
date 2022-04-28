@@ -1,6 +1,7 @@
 package services;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -30,6 +31,25 @@ public class LoginService extends Task<Void>{
 	protected Void call() throws Exception {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	private ResultSet executeLoginQuery() {
+		String query = "SELECT * " + "FROM dbo.AdminsShift ";
+		
+		PreparedStatement stmt;
+		ResultSet rs = null;
+		try {
+			stmt = conn.prepareStatement(query);
+			
+			rs = stmt.executeQuery();	
+			
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return rs;
+		
 	}
 	
 	private Connection establishConnection() {
