@@ -12,8 +12,9 @@ public class ConnectionToDB extends Task<Connection>{
 		String user = "sa";
 		String pass = "ass";
 		
-		Connection conn = DriverManager.getConnection(url, user, pass);	
+		Connection conn;
 		
+		conn = DriverManager.getConnection(url, user, pass);	
 		return conn;
 	}
 
