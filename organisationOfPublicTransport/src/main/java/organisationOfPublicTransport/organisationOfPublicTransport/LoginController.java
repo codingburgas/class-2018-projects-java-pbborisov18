@@ -1,8 +1,6 @@
 package organisationOfPublicTransport.organisationOfPublicTransport;
 
 
-import java.util.Set;
-
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -39,8 +37,6 @@ public class LoginController {
     		
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
-    		
-			System.out.println("2nd thread: " + thread.getId());
 			
 			task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 				@Override

@@ -2,15 +2,12 @@ package services;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.ConnectionToDB;
+import database.LoginQuery;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import organisationOfPublicTransport.organisationOfPublicTransport.App;
@@ -23,7 +20,7 @@ public class LoginService extends Task<Void>{
 	private String password;
 	private TextField objUsername;
 	private PasswordField objPassword;
-	private Connection conn;
+	
 
 	public LoginService(TextField txtUsername, PasswordField txtPassword) {
 		this.username = txtUsername.getText();
@@ -34,16 +31,28 @@ public class LoginService extends Task<Void>{
 
 	@Override
 	protected Void call() throws Exception {
+		
 		ResultSet rs;
 		
-		conn = establishConnection();
-
-		rs = executeLoginQuery(conn);
+		Connection conn = LoginQuery.establishConnection(objPassword);
+		rs = LoginQuery.executeLoginQuery(conn);		
 		
 		if(userExists(username, rs)) {
 
 			if(successfulLogin(rs, username, password)) {
 				System.out.println("Successful Login");
+				
+				Platform.runLater(new Runnable() { // Have to use this so I can call the dialogs method and show an error to the user
+					@Override
+					public void run() {
+						try {
+							App.setRoot("primary");
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					}
+				});
 				
 			} else {
 				Platform.runLater(new Runnable() { // Have to use this so I can call the dialogs method and show an error to the user
@@ -67,69 +76,6 @@ public class LoginService extends Task<Void>{
 		}
 		
 		return null;
-	}
-	
-	private ResultSet executeLoginQuery(Connection conn) {
-		String query = "SELECT * " + "FROM dbo.AdminsShift ";
-		
-		PreparedStatement stmt;
-		ResultSet rs = null;
-		try {
-			stmt = conn.prepareStatement(query);
-			
-			rs = stmt.executeQuery();	
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		return rs;
-	}
-	//Works the first time. Doesn't work after that ?????????????????
-	private Connection establishConnection() {
-		
-		Task<Connection> task = new ConnectionToDB();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				conn = task.getValue();
-				System.out.println("1"+conn);
-			}
-		});
-		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						App.dialogs("Connection failed!", "Connection failed!", AlertType.ERROR, objPassword.getScene());
-					}
-				});
-				
-				System.out.println( "2"+ task.getValue());
-			}
-		});
-		
-		thread.start();
-
-		try {
-			thread.join();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
-		System.out.println("3rd thread: " + thread.getId());
-		
-		System.out.println("3"+conn);
-		
-		return conn;
 	}
 	
 	private Boolean userExists(String username, ResultSet rs) throws SQLException {
