@@ -31,7 +31,12 @@ public class LoginService extends Task<Void>{
 
 	@Override
 	protected Void call() throws Exception {
+		loginLogic();
 		
+		return null;
+	}
+	
+	private void loginLogic() throws SQLException, InterruptedException {
 		ResultSet rs;
 		
 		Connection conn = LoginQuery.establishConnection(objPassword);
@@ -74,8 +79,6 @@ public class LoginService extends Task<Void>{
 			
 			conn.close();
 		}
-		
-		return null;
 	}
 	
 	private Boolean userExists(String username, ResultSet rs) throws SQLException {

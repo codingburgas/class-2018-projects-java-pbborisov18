@@ -26,7 +26,7 @@ public class PasswordHasher {
 			e.printStackTrace();
 		}
 		
-		System.out.println("Hash unsuccessful! Returning unhashed password!");
+		System.out.println("Hash unsuccessful!");
 		return password;
 	}
 }
