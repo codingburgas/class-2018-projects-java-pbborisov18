@@ -96,16 +96,16 @@ public class LoginService extends Task<Void>{
 		byte[] dbSalt;
 		String dbHashedPassword;
 
-			dbSalt = rs.getBytes("Salt");
-			dbHashedPassword = rs.getString("HashedPassword");
+		dbSalt = rs.getBytes("Salt");
+		dbHashedPassword = rs.getString("HashedPassword");
 				
-			password = PasswordHasher.passwordHasher(password, dbSalt);
+		password = PasswordHasher.passwordHasher(password, dbSalt);
 				
-			if(password.equals(dbHashedPassword)) {
-				return true;
-			} else {
-				return false;
-			}
+		if(password.equals(dbHashedPassword)) {
+			return true;
+		} else {
+			return false;
+		}
 				
 	}
 
