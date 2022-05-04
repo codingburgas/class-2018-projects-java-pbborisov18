@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<HBox fx:id="hbox" maxHeight="1080" maxWidth="1920" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+<HBox fx:id="hbox" maxHeight="1080" maxWidth="1920" prefHeight="1080.0" prefWidth="1920.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="organisationOfPublicTransport.organisationOfPublicTransport.MainMenuController">
    <children>
       <VBox HBox.hgrow="ALWAYS">
          <children>
