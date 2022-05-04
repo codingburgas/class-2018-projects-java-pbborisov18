@@ -10,16 +10,18 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import models.Admin;
 import organisationOfPublicTransport.organisationOfPublicTransport.App;
 import utils.PasswordHasher;
 import javafx.scene.control.Alert.AlertType;
 
-public class LoginService extends Task<Void>{
+public class LoginService extends Task<Admin>{
 	
 	private String username;
 	private String password;
 	private TextField objUsername;
 	private PasswordField objPassword;
+	Admin admin;
 	
 
 	public LoginService(TextField txtUsername, PasswordField txtPassword) {
@@ -30,13 +32,15 @@ public class LoginService extends Task<Void>{
 	}
 
 	@Override
-	protected Void call() throws Exception {
-		loginLogic();
+	protected Admin call() throws Exception {
 		
-		return null;
+		Admin admin = loginLogic();
+		
+		
+		return admin;
 	}
 	
-	private void loginLogic() throws SQLException, InterruptedException {
+	private Admin loginLogic() throws SQLException, InterruptedException {
 		ResultSet rs;
 		
 		Connection conn = LoginQuery.establishConnection(objPassword);
@@ -46,7 +50,7 @@ public class LoginService extends Task<Void>{
 
 			if(successfulLogin(rs, username, password)) {
 				System.out.println("Successful Login");
-				
+				getShiftAdminInfo(rs);
 				Platform.runLater(new Runnable() { // Have to use this so I can call the dialogs method and show an error to the user
 					@Override
 					public void run() {
@@ -79,6 +83,8 @@ public class LoginService extends Task<Void>{
 			
 			conn.close();
 		}
+		
+		return admin;
 	}
 	
 	private Boolean userExists(String username, ResultSet rs) throws SQLException {
@@ -107,6 +113,16 @@ public class LoginService extends Task<Void>{
 			return false;
 		}
 				
+	}
+	
+	private Admin getShiftAdminInfo(ResultSet rs) throws SQLException {
+		int shiftId = rs.getInt("ShiftId");
+		String shiftUsername = rs.getString("ShiftUsername");
+		
+		
+		admin = new Admin(shiftId, shiftUsername);
+		
+		return admin;
 	}
 
 }

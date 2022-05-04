@@ -12,6 +12,7 @@ import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.VBox;
+import models.Admin;
 import services.LoginService;
 
 public class LoginController {
@@ -26,6 +27,8 @@ public class LoginController {
     @FXML
     private ProgressIndicator loading;
     
+    public Admin admin;
+    
     public void enterPressed(ActionEvent event){
     	
     	if(fieldsEmpty()) {
@@ -33,7 +36,7 @@ public class LoginController {
     	} else {
     		disableLoginUI();
     		
-    		Task<Void> task = new LoginService(txtUsername, txtPassword);
+    		Task<Admin> task = new LoginService(txtUsername, txtPassword);
     		
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
@@ -41,6 +44,7 @@ public class LoginController {
 			task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
 				@Override
 				public void handle(WorkerStateEvent event) {
+					admin = task.getValue();
 					enableLoginUI();
 				}
             });
