@@ -1,5 +1,6 @@
 package models;
 
-public class Route {
+public record Route(	int routeId, String routeName, 
+						int/*time*/ routeDuration, int destinationTerminal) {
 
 }
