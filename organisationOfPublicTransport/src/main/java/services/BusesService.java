@@ -6,21 +6,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 import database.BusQuery;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Bus;
 
-public class BusesService extends Task<List<Bus>> {
+public class BusesService extends Task<ObservableList<Bus>> {
 
 	
 	@Override
-	protected List<Bus> call() throws Exception {
+	protected ObservableList<Bus> call() throws Exception {
 		
 		Connection conn = BusQuery.establishConnection();
-		List<Bus> busses = null;
+		ObservableList<Bus> busses = null;
 		
 		if(conn.isValid(0)) {
 			
-			busses = new ArrayList<Bus>();
+			busses = FXCollections.observableArrayList();
 			ResultSet rs = BusQuery.executeBusQuery(1);	
 			
 			while(rs.next()) {
@@ -35,11 +37,10 @@ public class BusesService extends Task<List<Bus>> {
 				int delay = rs.getInt("Delay");
 	
 				Bus a = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
-
+				
 				busses.add(a);
 			}
 		}
-		
 		return busses;
 	}
 	

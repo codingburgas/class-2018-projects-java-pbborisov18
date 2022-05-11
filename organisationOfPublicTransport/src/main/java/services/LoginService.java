@@ -54,7 +54,7 @@ public class LoginService extends Task<Void>{
 					public void run() {
 						try {
 							App.setRoot("primary");
-							MainMenuController.ass();
+							
 						} catch (IOException e) {
 							// TODO Auto-generated catch block
 							e.printStackTrace();

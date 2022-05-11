@@ -1,29 +1,37 @@
 package organisationOfPublicTransport.organisationOfPublicTransport;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.net.URL;
+import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
-import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.control.ListView;
 import models.Bus;
 import services.BusesService;
 
-public class MainMenuController {
+public class MainMenuController implements Initializable  {
 	
-	public static List<Bus> busses = new ArrayList<Bus>(); 
+	@FXML
+	private ListView<Bus> busListView;
 	
-	public static void ass() {
+	public static ObservableList<Bus> busses; 
+	
+	public void displayBusses() {
 		
 		Runnable helloRunnable = new Runnable() {
 		    public void run() {
 		    	
+		    	busses = FXCollections.observableArrayList();
 		    	
-		    	Task<List<Bus>> task = new BusesService();
+		    	Task<ObservableList<Bus>> task = new BusesService();
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
 				
@@ -31,6 +39,8 @@ public class MainMenuController {
 					@Override
 					public void handle(WorkerStateEvent event) {
 						busses = task.getValue();
+						busListView.setItems(busses);					
+						busListView.setCellFactory(busses -> new BusListViewCell());
 					}
 		        });
 				
@@ -41,16 +51,32 @@ public class MainMenuController {
 					}
 		        });
 				
-				for (Bus bus : busses) {
-					System.out.println(bus.toString());
-				}
-				
 				thread.start();
+				
 		    }
 		};
 		
 		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(helloRunnable, 0, 1, TimeUnit.SECONDS);
+		executor.scheduleAtFixedRate(helloRunnable, 0, 10, TimeUnit.SECONDS);
 		
 	}
+	
+	
+	public void getRoutesFromService() {
+		
+	}
+	
+	public void getActionsFromService() {
+		
+	}
+
+
+	//Executes when the main menu is loaded
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		displayBusses();
+		
+	}	
+	
+	
 }
