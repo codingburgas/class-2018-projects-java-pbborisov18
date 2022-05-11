@@ -24,8 +24,9 @@ public class MainMenuController implements Initializable  {
 	
 	public static ObservableList<Bus> busses; 
 	
-	public void displayBusses() {
-		
+	//Executes every 10 secs looking for changes in the busses list
+	//If changes are found they are displayed
+	public void displayBusses() {	
 		Runnable helloRunnable = new Runnable() {
 		    public void run() {
 		    	
@@ -62,11 +63,11 @@ public class MainMenuController implements Initializable  {
 	}
 	
 	
-	public void getRoutesFromService() {
+	public void displayRoutes() {
 		
 	}
 	
-	public void getActionsFromService() {
+	public void displayActions() {
 		
 	}
 

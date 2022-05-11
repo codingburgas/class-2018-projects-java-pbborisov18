@@ -23,7 +23,7 @@ public class BusesService extends Task<ObservableList<Bus>> {
 		if(conn.isValid(0)) {
 			
 			busses = FXCollections.observableArrayList();
-			ResultSet rs = BusQuery.executeBusQuery(1);	
+			ResultSet rs = BusQuery.executeBusQuery(1, true);	
 			
 			while(rs.next()) {
 				
