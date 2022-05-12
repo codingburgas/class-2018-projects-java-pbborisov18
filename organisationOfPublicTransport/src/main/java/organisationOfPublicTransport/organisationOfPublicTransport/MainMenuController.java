@@ -33,15 +33,17 @@ public class MainMenuController implements Initializable  {
 	public static ObservableList<Bus> busses; 
 	public static ObservableList<Terminal> terminals; 
 	
+	//has to be initialized because I can't shutdown null
+	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+	
 	//Executes every 10 secs looking for changes in the busses list
 	//If changes are found they are displayed
-	public void displayBusses() {	
+	public void displayBusses(int id, boolean flag) {	
 		Runnable helloRunnable = new Runnable() {
 		    public void run() {
-		    	
 		    	busses = FXCollections.observableArrayList();
 		    	
-		    	Task<ObservableList<Bus>> task = new BusesService();
+		    	Task<ObservableList<Bus>> task = new BusesService(id, flag);
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
 				
@@ -67,12 +69,12 @@ public class MainMenuController implements Initializable  {
 		};
 		
 		//schedules a task to be done every 10 secs
-		ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+		executor = Executors.newScheduledThreadPool(1);
 		executor.scheduleAtFixedRate(helloRunnable, 0, 10, TimeUnit.SECONDS);
 		
 	}
 	
-	//Displays the terminals in the combo box
+	//Displays the terminals in the combo box in the correct way
 	public void displayBusSelection() {
 		
 		Task<ObservableList<Terminal>> task = new TerminalService();
@@ -109,8 +111,14 @@ public class MainMenuController implements Initializable  {
 	}
 
 	public void busSelectionChangeListener(ActionEvent event) {
-		System.out.println(busComboBox.getValue());
-		
+		//kills the previous threadpool which updates the bus menu
+		executor.shutdownNow();
+		//a new threadpool is created inside
+		if(busComboBox.getValue().terminalId() == 0) {
+			displayBusses(busComboBox.getValue().terminalId(), true);	
+		} else {
+			displayBusses(busComboBox.getValue().terminalId(), false);
+		}
 		
 	}
 	
@@ -126,7 +134,6 @@ public class MainMenuController implements Initializable  {
 	//Executes when the main menu is loaded
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
-		displayBusses();
 		displayBusSelection();
 		
 	}	
