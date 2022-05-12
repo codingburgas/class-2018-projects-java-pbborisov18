@@ -2,6 +2,7 @@ package services;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import models.Bus;
 
 public class BusesService extends Task<ObservableList<Bus>> {
 
-	
 	@Override
 	protected ObservableList<Bus> call() throws Exception {
 		
@@ -44,6 +44,33 @@ public class BusesService extends Task<ObservableList<Bus>> {
 		return busses;
 	}
 	
+	
+	public ObservableList<Bus> getBusses(int id, boolean flag) throws InterruptedException, SQLException{
+		Connection conn = BusQuery.establishConnection();
+		ObservableList<Bus> busses = null;
+		
+		busses = FXCollections.observableArrayList();
+		//if flag is true retrieves all busses
+		ResultSet rs = BusQuery.executeBusQuery(id, flag);	
+		
+		while(rs.next()) {
+			
+			int busId = rs.getInt("BusId");
+			String busName = rs.getString("BusName");
+			int currentRouteId = rs.getInt("CurrentRouteId");
+			int currentTerminalId = rs.getInt("CurrentTerminalId");
+			boolean broken = rs.getBoolean("Broken");
+			boolean charging = rs.getBoolean("Charging");
+			int battery = rs.getInt("Battery");
+			int delay = rs.getInt("Delay");
+
+			Bus a = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
+			
+			busses.add(a);
+		}
+		
+		return busses;
+	}
 	
 	
 	
