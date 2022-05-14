@@ -12,10 +12,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import models.Admin;
 import organisationOfPublicTransport.organisationOfPublicTransport.App;
-import organisationOfPublicTransport.organisationOfPublicTransport.MainMenuController;
 import utils.PasswordHasher;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.Button;
 
 public class LoginService extends Task<Admin>{
 	

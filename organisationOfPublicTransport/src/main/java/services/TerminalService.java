@@ -3,7 +3,6 @@ package services;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import database.BusQuery;
 import database.TerminalQuery;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

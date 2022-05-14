@@ -1,5 +1,6 @@
 package organisationOfPublicTransport.organisationOfPublicTransport;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 import java.util.concurrent.Executors;
@@ -13,9 +14,15 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import models.Bus;
 import models.Terminal;
@@ -24,17 +31,25 @@ import services.TerminalService;
 
 public class MainMenuController implements Initializable  {
 	
+	/* BUS MENU */
 	@FXML
 	private ListView<Bus> busListView;
 	
 	@FXML
 	private ComboBox<Terminal> busComboBox;
 	
+	@FXML
+	private Button brokenBusButton;
+	
+	
 	public static ObservableList<Bus> busses; 
 	public static ObservableList<Terminal> terminals; 
 	
 	//has to be initialized because I can't shutdown null
+	//used for refreshing the bus menu every 10 secs
 	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+	
+	/* BUS */
 	
 	//Executes every 10 secs looking for changes in the busses list
 	//If changes are found they are displayed
@@ -110,6 +125,7 @@ public class MainMenuController implements Initializable  {
 		thread.start();
 	}
 
+	//Waits for a change in the combo box
 	public void busSelectionChangeListener(ActionEvent event) {
 		//kills the previous threadpool which updates the bus menu
 		executor.shutdownNow();
@@ -122,9 +138,42 @@ public class MainMenuController implements Initializable  {
 		
 	}
 	
+	public void brokenBusButtonListener(ActionEvent event) {
+
+		System.out.println("executed");
+		
+		Parent part;
+		try {
+			part = FXMLLoader.load(getClass().getResource("BrokenBus.fxml"));
+			Stage stage = new Stage();
+			Scene scene = new Scene(part);
+			stage.setScene(scene);
+			stage.initOwner(brokenBusButton.getScene().getWindow());
+			//stage.resizableProperty().setValue(false);
+			//stage.initStyle(StageStyle.TRANSPARENT);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.show();
+
+			//Might be useful later when I focus on UI
+			/*if(!stage.isFocused()) {
+				stage.hide();
+			}*/
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	/* ROUTES */
+	
 	public void displayRoutes() {
 		
 	}
+	
+	/* ACTIONS */
 	
 	public void displayActions() {
 		
