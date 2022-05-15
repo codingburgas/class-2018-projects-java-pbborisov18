@@ -20,7 +20,7 @@
             <ListView fx:id="busListView" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
             <HBox alignment="CENTER_LEFT" VBox.vgrow="NEVER">
                <children>
-                <Button focusTraversable="false" mnemonicParsing="false" text="Broken Bus" />
+                <Button fx:id="brokenBusButton" focusTraversable="false" mnemonicParsing="false" onAction="#brokenBusButtonListener" text="Broken Bus" />
                 <Button focusTraversable="false" mnemonicParsing="false" text="Fixed Bus" />
                </children>
             </HBox>

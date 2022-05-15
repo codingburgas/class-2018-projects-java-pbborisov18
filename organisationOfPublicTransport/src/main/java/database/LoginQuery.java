@@ -32,7 +32,6 @@ public class LoginQuery{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		System.out.println(conn);
 		return rs;
 	}
 	
