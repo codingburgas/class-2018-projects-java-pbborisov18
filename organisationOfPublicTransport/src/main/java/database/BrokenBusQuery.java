@@ -14,10 +14,10 @@ public class BrokenBusQuery {
 	
 	static Connection conn;
 	
-	public static ResultSet executeBreakABusQuery(int busId) {
+	public static ResultSet executeSelectABusQuery(int busId) {
 		String query = 	"SELECT * " +
 						"FROM dbo.Bus " +
-						"WHERE BusId = ? ;";
+						"WHERE BusId = ? and Broken = 'False';";
 		PreparedStatement stmt;
 		ResultSet rs = null;
 		try {
@@ -31,6 +31,30 @@ public class BrokenBusQuery {
 		}
 		
 		return rs;
+	}
+	
+	public static void executeBreakABusQuery(int busId) {
+		String query = 	"UPDATE dbo.Bus " + 
+						"SET Broken = 'True' " +
+						"WHERE BusId = ? ;";
+		
+		PreparedStatement stmt = null;
+		
+		try {
+			stmt = conn.prepareStatement(query);
+			stmt.setInt(1, busId);
+			int count = stmt.executeUpdate();
+			
+			if(count > 0 ) {
+				System.out.println("Successfully updated!");
+			} else {
+				System.out.println("Failed to update!");
+			}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
 	
 	public static Connection establishConnection() throws InterruptedException {

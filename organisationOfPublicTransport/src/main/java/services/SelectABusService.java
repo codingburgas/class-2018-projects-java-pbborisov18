@@ -7,11 +7,11 @@ import database.BrokenBusQuery;
 import javafx.concurrent.Task;
 import models.Bus;
 
-public class BreakABusService extends Task<Bus> {
+public class SelectABusService extends Task<Bus> {
 
 	int id;
 	
-	public BreakABusService(int id){
+	public SelectABusService(int id){
 		this.id = id;
 	}
 	
@@ -21,7 +21,7 @@ public class BreakABusService extends Task<Bus> {
 		Connection conn = BrokenBusQuery.establishConnection();
 		
 		if(conn.isValid(0)) {
-			ResultSet rs = BrokenBusQuery.executeBreakABusQuery(id);
+			ResultSet rs = BrokenBusQuery.executeSelectABusQuery(id);
 			
 			while(rs.next()) {
 				int busId = rs.getInt("BusId");

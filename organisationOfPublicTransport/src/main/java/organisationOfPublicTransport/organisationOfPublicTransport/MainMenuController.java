@@ -139,8 +139,6 @@ public class MainMenuController implements Initializable  {
 	}
 	
 	public void brokenBusButtonListener(ActionEvent event) {
-
-		System.out.println("executed");
 		
 		Parent part;
 		try {
