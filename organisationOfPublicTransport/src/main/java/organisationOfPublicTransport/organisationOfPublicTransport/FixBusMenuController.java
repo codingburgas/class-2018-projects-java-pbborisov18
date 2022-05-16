@@ -34,20 +34,8 @@ public class FixBusMenuController implements Initializable{
 	 
 	public ObservableList<Terminal> terminals; 
 	public ObservableList<Bus> buses;
-	
-	public void test(ActionEvent event) {
-		System.out.println("buscombo");
-	}
 
-	/*
-	 public void terminalsListener(ActionEvent event) {
-		System.out.println("terminals");
-	}
-	
-	public void brokenBussesListener(ActionEvent event) {
-		System.out.println("busses");
-	}
-	*/
+
 	public void displayTerminals() {
 			
 			Task<ObservableList<Terminal>> task = new TerminalService();
@@ -97,9 +85,14 @@ public class FixBusMenuController implements Initializable{
 				
 				buses = task.getValue();
 				
+				noBusesLeftToFix(buses);
+				
+				
+				
 				StringConverter<Bus> converter = new StringConverter<Bus>() {
 					@Override
 					public String toString(Bus object) {
+						
 						return object.busName();
 					}
 
@@ -121,6 +114,14 @@ public class FixBusMenuController implements Initializable{
 		thread.start();
 }
 	
+	
+	public void noBusesLeftToFix(ObservableList<Bus> buses) {
+		if(buses.isEmpty()) {
+			App.dialogs("No broken buses", "No broken buses", AlertType.INFORMATION, busCombobox.getScene());
+			Stage stage = (Stage) busCombobox.getScene().getWindow();
+			stage.close();
+		}
+	}
 	
 	public void confirmButton(ActionEvent event) {
 			

@@ -25,7 +25,7 @@ public class UpdateFixBusService extends Task<Void>{
 		} else {
 			System.out.println("connection failed");
 		}
-	
+		conn.close();
 		return null;
 	}
 }

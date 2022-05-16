@@ -47,6 +47,9 @@ public class BusesService extends Task<ObservableList<Bus>> {
 					
 					busses.add(a);
 				}
+				
+				conn.close();
+				
 			} else {
 				System.out.println("connection is down");
 			}
@@ -54,6 +57,7 @@ public class BusesService extends Task<ObservableList<Bus>> {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		
 		return busses;
 	}
 	

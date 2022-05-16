@@ -41,7 +41,7 @@ public class SelectABusService extends Task<Bus> {
 		} else {
 			System.out.println("connection is down");
 		}
-		
+		conn.close();
 		return null;
 	}
 

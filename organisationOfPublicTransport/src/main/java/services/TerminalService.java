@@ -31,7 +31,7 @@ public class TerminalService extends Task<ObservableList<Terminal>>{
 			}
 				
 		}
-		
+		conn.close();
 		return terminals;
 	}
 

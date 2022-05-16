@@ -39,7 +39,7 @@ public class BrokenBusService extends Task<ObservableList<Bus>> {
 				buses.add(a);
 			}
 		}
-		
+		conn.close();
 		return buses;
 	}
 
