@@ -42,8 +42,8 @@ public class MainMenuController implements Initializable  {
 	private Button brokenBusButton;
 	
 	
-	public static ObservableList<Bus> busses; 
-	public static ObservableList<Terminal> terminals; 
+	private ObservableList<Bus> busses; 
+	private ObservableList<Terminal> terminals; 
 	
 	//has to be initialized because I can't shutdown null
 	//used for refreshing the bus menu every 10 secs
@@ -102,7 +102,9 @@ public class MainMenuController implements Initializable  {
 				//assigns the terminals we got from the query
 				terminals = task.getValue();
 				terminals.add(new Terminal(0, "All"));
-
+				
+				
+				
 				StringConverter<Terminal> converter = new StringConverter<Terminal>() {
 					@Override
 					public String toString(Terminal object) {
@@ -138,6 +140,7 @@ public class MainMenuController implements Initializable  {
 		
 	}
 	
+	//If the Broken bus buttons is pressed this executes
 	public void brokenBusButtonListener(ActionEvent event) {
 		
 		Parent part;
@@ -164,6 +167,32 @@ public class MainMenuController implements Initializable  {
 
 	}
 	
+	//If the fix bus buttons is pressed
+	public void fixBusButtonListener(ActionEvent event) {
+		
+		Parent part;
+		try {
+			part = FXMLLoader.load(getClass().getResource("FixBus.fxml"));
+			Stage stage = new Stage();
+			Scene scene = new Scene(part);
+			stage.setScene(scene);
+			stage.initOwner(brokenBusButton.getScene().getWindow());
+			//stage.resizableProperty().setValue(false);
+			//stage.initStyle(StageStyle.TRANSPARENT);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.show();
+
+			//Might be useful later when I focus on UI
+			/*if(!stage.isFocused()) {
+				stage.hide();
+			}*/
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+	}
 	
 	/* ROUTES */
 	

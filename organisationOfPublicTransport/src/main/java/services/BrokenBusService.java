@@ -4,26 +4,27 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import database.BrokenBusQuery;
+import database.TerminalQuery;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Bus;
+import models.Terminal;
 
-public class SelectABusService extends Task<Bus> {
+public class BrokenBusService extends Task<ObservableList<Bus>> {
 
-	int id;
-	
-	public SelectABusService(int id){
-		this.id = id;
-	}
 	
 	@Override
-	protected Bus call() throws Exception {
+	protected ObservableList<Bus> call() throws Exception {
 		
 		Connection conn = BrokenBusQuery.establishConnection();
+		ObservableList<Bus> buses = FXCollections.observableArrayList();
 		
 		if(conn.isValid(0)) {
-			ResultSet rs = BrokenBusQuery.executeSelectNotBrokenBusQuery(id);
+			ResultSet rs = BrokenBusQuery.executeSelectBrokenBusesQuery();
 			
 			while(rs.next()) {
+				
 				int busId = rs.getInt("BusId");
 				String busName = rs.getString("BusName");
 				int currentRouteId = rs.getInt("CurrentRouteId");
@@ -33,16 +34,13 @@ public class SelectABusService extends Task<Bus> {
 				int battery = rs.getInt("Battery");
 				int delay = rs.getInt("Delay");
 
-				Bus bus = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
+				Bus a = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
 				
-				return bus;
+				buses.add(a);
 			}
-			
-		} else {
-			System.out.println("connection is down");
 		}
 		
-		return null;
+		return buses;
 	}
 
 }

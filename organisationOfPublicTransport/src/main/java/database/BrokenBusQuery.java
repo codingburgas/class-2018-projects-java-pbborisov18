@@ -14,7 +14,7 @@ public class BrokenBusQuery {
 	
 	static Connection conn;
 	
-	public static ResultSet executeSelectABusQuery(int busId) {
+	public static ResultSet executeSelectNotBrokenBusQuery(int busId) {
 		String query = 	"SELECT * " +
 						"FROM dbo.Bus " +
 						"WHERE BusId = ? and Broken = 'False';";
@@ -55,6 +55,50 @@ public class BrokenBusQuery {
 			e.printStackTrace();
 		}
 		
+	}
+	
+	public static ResultSet executeSelectBrokenBusesQuery() {
+		String query = 	"SELECT * " + 
+						"FROM Bus " + 
+						"WHERE Broken = 'True' ;";
+		
+		PreparedStatement stmt;
+		ResultSet rs = null;
+		try {
+			stmt = conn.prepareStatement(query);
+			
+			rs = stmt.executeQuery();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return rs;
+	}
+	
+	public static void executeFixABusQuery(int busId, int terminalId) {
+		String query = 	"UPDATE dbo.Bus " + 
+						"SET Broken = 'False', CurrentTerminalId = ? " +
+						"WHERE BusId = ? ;";
+
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(query);
+			stmt.setInt(1, terminalId);
+			stmt.setInt(2, busId);
+			
+			int count = stmt.executeUpdate();
+
+			if(count > 0 ) {
+				System.out.println("Successfully updated!");
+			} else {
+				System.out.println("Failed to update!");
+			}
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static Connection establishConnection() throws InterruptedException {

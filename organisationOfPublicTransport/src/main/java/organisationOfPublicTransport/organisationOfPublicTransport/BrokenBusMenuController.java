@@ -19,7 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import models.Bus;
 import services.SelectABusService;
-import services.UpdateABusService;
+import services.UpdateBreakBusService;
 
 
 public class BrokenBusMenuController {
@@ -65,7 +65,6 @@ public class BrokenBusMenuController {
 					if(busExists(bus)) {
 						changeToConfirmationScreen(bus);
 					}
-					
 					
 				}
             });
@@ -136,7 +135,7 @@ public class BrokenBusMenuController {
 	
 		
 		yes.setOnAction(event -> {
-			Task<Bus> task = new UpdateABusService(bus.busId());
+			Task<Void> task = new UpdateBreakBusService(bus.busId());
     		
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);

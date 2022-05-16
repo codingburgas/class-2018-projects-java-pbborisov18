@@ -1,34 +1,31 @@
 package services;
 
-
 import java.sql.Connection;
 
 import database.BrokenBusQuery;
 import javafx.concurrent.Task;
-import models.Bus;
 
-public class UpdateABusService extends Task<Bus>{
+public class UpdateFixBusService extends Task<Void>{
 
-	int id;
+	private int id;
+	private int terminalId;
 	
-	public UpdateABusService(int id) {
+	public UpdateFixBusService(int id, int terminalId) {
 		this.id = id;
+		this.terminalId = terminalId;
 	}
 	
 	@Override
-	protected Bus call() throws Exception {
+	protected Void call() throws Exception {
 		
 		Connection conn = BrokenBusQuery.establishConnection();
 		
 		if(conn.isValid(0)) {
-			BrokenBusQuery.executeBreakABusQuery(id);
-			
-			
+			BrokenBusQuery.executeFixABusQuery(id, terminalId);
 		} else {
 			System.out.println("connection failed");
 		}
-		
+	
 		return null;
 	}
-
 }
