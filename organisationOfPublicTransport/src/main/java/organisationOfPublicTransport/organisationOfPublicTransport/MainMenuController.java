@@ -3,6 +3,7 @@ package organisationOfPublicTransport.organisationOfPublicTransport;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -25,8 +26,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import models.Bus;
+import models.Route;
 import models.Terminal;
 import services.BusesService;
+import services.RoutesService;
 import services.TerminalService;
 
 public class MainMenuController implements Initializable  {
@@ -36,25 +39,30 @@ public class MainMenuController implements Initializable  {
 	private ListView<Bus> busListView;
 	
 	@FXML
-	private ComboBox<Terminal> busComboBox;
+	private ComboBox<Terminal> busTerminalComboBox;
 	
 	@FXML
 	private Button brokenBusButton;
 	
 	
+	@FXML
+	private ListView<Route> routeListView;
+	
 	private ObservableList<Bus> busses; 
 	private ObservableList<Terminal> terminals; 
+	private ObservableList<Route> routes;
 	
 	//has to be initialized because I can't shutdown null
 	//used for refreshing the bus menu every 10 secs
-	ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService busExecutor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService routeExecutor = Executors.newScheduledThreadPool(1);
 	
 	/* BUS */
 	
 	//Executes every 10 secs looking for changes in the busses list
 	//If changes are found they are displayed
 	public void displayBusses(int id, boolean flag) {	
-		Runnable helloRunnable = new Runnable() {
+		Runnable runnable = new Runnable() {
 		    public void run() {
 		    	busses = FXCollections.observableArrayList();
 		    	
@@ -71,27 +79,19 @@ public class MainMenuController implements Initializable  {
 					}
 		        });
 				
-				task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						
-					}
-		        });
-				
 				thread.start();
 				
 		    }
 		};
 		
 		//schedules a task to be done every 10 secs
-		executor = Executors.newScheduledThreadPool(1);
-		executor.scheduleAtFixedRate(helloRunnable, 0, 10, TimeUnit.SECONDS);
+		busExecutor = Executors.newScheduledThreadPool(1);
+		busExecutor.scheduleAtFixedRate(runnable, 0, 10, TimeUnit.SECONDS);
 		
 	}
 	
 	//Displays the terminals in the combo box in the correct way
 	public void displayBusSelection() {
-		
 		Task<ObservableList<Terminal>> task = new TerminalService();
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
@@ -102,8 +102,6 @@ public class MainMenuController implements Initializable  {
 				//assigns the terminals we got from the query
 				terminals = task.getValue();
 				terminals.add(new Terminal(0, "All"));
-				
-				
 				
 				StringConverter<Terminal> converter = new StringConverter<Terminal>() {
 					@Override
@@ -117,25 +115,32 @@ public class MainMenuController implements Initializable  {
 					}
 				};
 
-				busComboBox.setConverter(converter);
-				busComboBox.setItems(terminals);
-				busComboBox.getSelectionModel().selectLast();
-				busComboBox.setCellFactory(terminals -> new BusComboBoxCell());
+				busTerminalComboBox.setConverter(converter);
+				busTerminalComboBox.setItems(terminals);
+				busTerminalComboBox.getSelectionModel().selectLast();
+				busTerminalComboBox.setCellFactory(terminals -> new BusComboBoxCell());
 			}
 		});
-
+		
+		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
+			@Override
+			public void handle(WorkerStateEvent event) {
+				displayBusSelection();
+			}
+		});
+		
 		thread.start();
-	}
-
+	}	
+	
 	//Waits for a change in the combo box
 	public void busSelectionChangeListener(ActionEvent event) {
 		//kills the previous threadpool which updates the bus menu
-		executor.shutdownNow();
+		busExecutor.shutdownNow();
 		//a new threadpool is created inside
-		if(busComboBox.getValue().terminalId() == 0) {
-			displayBusses(busComboBox.getValue().terminalId(), true);	
+		if(busTerminalComboBox.getValue().terminalId() == 0) {
+			displayBusses(busTerminalComboBox.getValue().terminalId(), true);	
 		} else {
-			displayBusses(busComboBox.getValue().terminalId(), false);
+			displayBusses(busTerminalComboBox.getValue().terminalId(), false);
 		}
 		
 	}
@@ -194,11 +199,77 @@ public class MainMenuController implements Initializable  {
 		
 	}
 	
-	/* ROUTES */
 	
+	
+	/* ROUTES */
+	//Executes every 10 secs looking for changes in the bus list
+	//Updates the info on the route menu
 	public void displayRoutes() {
+		Runnable Runnable = new Runnable() {
+		    public void run() {
+		    	
+		    	CountDownLatch cdLatch = new CountDownLatch(1);
+		    	
+		    	//Get all Buses in db
+		    	Task<ObservableList<Bus>> task2 = new BusesService(0, true);;
+				Thread thread2 = new Thread(task2);
+				thread2.setDaemon(true);
+		    	
+				//Get all Routes in db
+		    	Task<ObservableList<Route>> task = new RoutesService();;
+				Thread thread = new Thread(task);
+				thread.setDaemon(true);
+				
+				//When all the buses are in the Observable list
+				//Then all the routes are gotten from the db and placed in the cells together with the bus info
+				task2.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+					@Override
+					public void handle(WorkerStateEvent event) {
+						
+						ObservableList<Bus> getAllBuses = task2.getValue();
+						cdLatch.countDown();
+						
+						
+						task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+							@Override
+							public void handle(WorkerStateEvent event) {
+								routes = task.getValue();
+								routeListView.setItems(routes);					
+								routeListView.setCellFactory(routes -> new RouteListViewCell(getAllBuses));
+							}
+				        });
+						
+						
+					}
+		        });
+				
+				task2.setOnFailed(new EventHandler<WorkerStateEvent>() {
+					@Override
+					public void handle(WorkerStateEvent event) {
+						task2.cancel();
+						cdLatch.countDown();
+					}
+				});
+				
+				
+				thread2.start();
+				
+				try {
+					cdLatch.await();
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
+				thread.start();
+				
+		    }
+		};
 		
+		routeExecutor = Executors.newScheduledThreadPool(1);
+		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
 	}
+
 	
 	/* ACTIONS */
 	
@@ -211,7 +282,7 @@ public class MainMenuController implements Initializable  {
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		displayBusSelection();
-		
+		displayRoutes();
 	}	
 	
 	

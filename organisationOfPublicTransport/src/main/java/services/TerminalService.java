@@ -19,7 +19,7 @@ public class TerminalService extends Task<ObservableList<Terminal>>{
 		
 		if(conn.isValid(0)) {
 			
-			ResultSet rs = TerminalQuery.executeTerminalQuery();
+			ResultSet rs = TerminalQuery.executeSelectTerminalQuery();
 			
 			while(rs.next()) {
 				int terminalId = rs.getInt("Id");

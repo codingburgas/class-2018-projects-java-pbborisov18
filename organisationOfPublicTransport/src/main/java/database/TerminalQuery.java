@@ -15,7 +15,7 @@ public class TerminalQuery {
 	static Connection conn;
 	
 	
-	public static ResultSet executeTerminalQuery() throws SQLException {
+	public static ResultSet executeSelectTerminalQuery() throws SQLException {
 		
 		String query = "SELECT * " + "FROM Terminals ";
 		

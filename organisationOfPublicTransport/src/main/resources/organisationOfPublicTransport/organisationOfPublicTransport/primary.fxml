@@ -14,7 +14,7 @@
             <HBox>
                <children>
                   <Label focusTraversable="false" text="Busses" />
-                  <ComboBox fx:id="busComboBox" focusTraversable="false" onAction="#busSelectionChangeListener" prefWidth="150.0" />
+                  <ComboBox fx:id="busTerminalComboBox" focusTraversable="false" onAction="#busSelectionChangeListener" prefWidth="150.0" />
                </children>
             </HBox>
             <ListView fx:id="busListView" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
@@ -35,7 +35,7 @@
       <VBox maxWidth="-Infinity" prefHeight="1080.0" prefWidth="640.0" HBox.hgrow="ALWAYS">
          <children>
             <Label focusTraversable="false" text="Routes" />
-            <ListView focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="routeListView" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
             <HBox>
                <children>
                   <Button focusTraversable="false" mnemonicParsing="false" text="Reroute" />

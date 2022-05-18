@@ -47,9 +47,7 @@ public class BusesService extends Task<ObservableList<Bus>> {
 					
 					busses.add(a);
 				}
-				
-				conn.close();
-				
+			conn.close();	
 			} else {
 				System.out.println("connection is down");
 			}

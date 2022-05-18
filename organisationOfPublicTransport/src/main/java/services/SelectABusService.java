@@ -19,7 +19,7 @@ public class SelectABusService extends Task<Bus> {
 	protected Bus call() throws Exception {
 		
 		Connection conn = BrokenBusQuery.establishConnection();
-		
+		Bus bus = null;
 		if(conn.isValid(0)) {
 			ResultSet rs = BrokenBusQuery.executeSelectNotBrokenBusQuery(id);
 			
@@ -33,10 +33,13 @@ public class SelectABusService extends Task<Bus> {
 				int battery = rs.getInt("Battery");
 				int delay = rs.getInt("Delay");
 
-				Bus bus = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
+				bus = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
 				
-				return bus;
 			}
+			
+			conn.close();
+			
+			return bus;
 			
 		} else {
 			System.out.println("connection is down");

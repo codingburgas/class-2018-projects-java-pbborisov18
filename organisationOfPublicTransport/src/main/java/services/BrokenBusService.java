@@ -4,12 +4,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import database.BrokenBusQuery;
-import database.TerminalQuery;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Bus;
-import models.Terminal;
 
 public class BrokenBusService extends Task<ObservableList<Bus>> {
 
