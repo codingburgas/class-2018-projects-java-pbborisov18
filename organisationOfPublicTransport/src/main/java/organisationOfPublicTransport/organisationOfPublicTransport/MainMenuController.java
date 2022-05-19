@@ -44,9 +44,11 @@ public class MainMenuController implements Initializable  {
 	@FXML
 	private Button brokenBusButton;
 	
-	
+	/* ROUTES MENU */
 	@FXML
 	private ListView<Route> routeListView;
+	
+	
 	
 	private ObservableList<Bus> busses; 
 	private ObservableList<Terminal> terminals; 
@@ -216,7 +218,7 @@ public class MainMenuController implements Initializable  {
 				thread2.setDaemon(true);
 		    	
 				//Get all Routes in db
-		    	Task<ObservableList<Route>> task = new RoutesService();;
+		    	Task<ObservableList<Route>> task = new RoutesService(0, true);;
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
 				
@@ -270,6 +272,31 @@ public class MainMenuController implements Initializable  {
 		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
 	}
 
+	public void rerouteListener(ActionEvent event) {
+		Parent part;
+		try {
+			part = FXMLLoader.load(getClass().getResource("RerouteSearch.fxml"));
+			Stage stage = new Stage();
+			Scene scene = new Scene(part);
+			stage.setScene(scene);
+			stage.initOwner(brokenBusButton.getScene().getWindow());
+			//stage.resizableProperty().setValue(false);
+			//stage.initStyle(StageStyle.TRANSPARENT);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			stage.show();
+
+			//Might be useful later when I focus on UI
+			/*if(!stage.isFocused()) {
+				stage.hide();
+			}*/
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+	
 	
 	/* ACTIONS */
 	

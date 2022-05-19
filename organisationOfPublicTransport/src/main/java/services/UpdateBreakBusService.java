@@ -22,7 +22,6 @@ public class UpdateBreakBusService extends Task<Void>{
 		if(conn.isValid(0)) {
 			BrokenBusQuery.executeBreakABusQuery(id);
 			
-			
 		} else {
 			System.out.println("connection failed");
 		}

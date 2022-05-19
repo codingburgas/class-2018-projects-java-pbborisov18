@@ -24,12 +24,15 @@ import services.UpdateBreakBusService;
 
 public class BrokenBusMenuController {
 	
+	//1st window
 	@FXML
 	public Button searchBrokenBusButton;
 	
 	@FXML
 	public TextField txtBrokenBusId;
 	
+	
+	//2nd window
 	@FXML
 	private Label busName;
 	
@@ -186,14 +189,6 @@ public class BrokenBusMenuController {
 		}
 		
 		return true;
-	}
-	
-	public boolean fieldEmpty() {
-		if(txtBrokenBusId.getText().equals("")) {
-			return true;
-		} else {
-			return false;
-		}		
 	}
 	
 	public boolean isNumeric(String string) {

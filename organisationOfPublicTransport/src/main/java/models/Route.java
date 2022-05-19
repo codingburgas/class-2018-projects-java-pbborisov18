@@ -1,6 +1,8 @@
 package models;
 
+import java.time.LocalTime;
+
 public record Route(	int routeId, String routeName, 
-						String/*time*/ routeDuration, int destinationTerminal) {
+						LocalTime routeDuration, int destinationTerminal, LocalTime startIntervals) {
 
 }

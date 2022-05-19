@@ -3,6 +3,7 @@ package services;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 
 import database.RoutesQuery;
 import javafx.collections.FXCollections;
@@ -12,6 +13,14 @@ import models.Route;
 
 public class RoutesService extends Task<ObservableList<Route>>{
 
+	private int id;
+	private boolean all; 
+	
+	public RoutesService(int id, boolean all){
+		this.id = id;
+		this.all = all;
+	}
+	
 	@Override
 	protected ObservableList<Route> call() {
 		ObservableList<Route> routes = null;
@@ -22,16 +31,17 @@ public class RoutesService extends Task<ObservableList<Route>>{
 			if(conn.isValid(0)) {
 				
 				routes = FXCollections.observableArrayList();
-				ResultSet rs = RoutesQuery.executeSelectRoutes();
+				ResultSet rs = RoutesQuery.executeSelectRoutes(id, all);
 				
 				while(rs.next()) {
 					
 					int routeId = rs.getInt("RouteId");
 					String routeName = rs.getString("RouteName");
-					String routeDuration = rs.getString("RouteDuration");
+					LocalTime routeDuration = rs.getTime("RouteDuration").toLocalTime();
 					int destinationTerminalId = rs.getInt("DestinationTerminalId");
+					LocalTime startInvervals = rs.getTime("StartIntervals").toLocalTime();
 					
-					Route route = new Route(routeId, routeName, routeDuration, destinationTerminalId);
+					Route route = new Route(routeId, routeName, routeDuration, destinationTerminalId, startInvervals);
 					
 					routes.add(route);		
 				}

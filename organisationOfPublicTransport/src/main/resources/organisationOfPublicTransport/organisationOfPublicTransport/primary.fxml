@@ -38,7 +38,7 @@
             <ListView fx:id="routeListView" focusTraversable="false" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
             <HBox>
                <children>
-                  <Button focusTraversable="false" mnemonicParsing="false" text="Reroute" />
+                  <Button focusTraversable="false" mnemonicParsing="false" text="Reroute" onAction="#rerouteListener"/>
                </children>
             </HBox>
             <Label focusTraversable="false" text="Status" VBox.vgrow="ALWAYS" />
