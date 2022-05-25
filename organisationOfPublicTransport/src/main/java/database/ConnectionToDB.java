@@ -16,7 +16,7 @@ public class ConnectionToDB extends Task<Connection>{
 	private Connection dbConnection() throws SQLException {
 		String url = "jdbc:sqlserver://localhost\\SQLEXPRESS01;databaseName=OrganisationOfPublicTransport;encrypt=false;trustServerCertificate=true";
 		String user = "sa";
-		String pass = "ass";
+		String pass = "123";
 		
 		Connection conn;
 		

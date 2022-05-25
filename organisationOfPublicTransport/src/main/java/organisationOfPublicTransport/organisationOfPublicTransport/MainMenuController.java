@@ -2,6 +2,11 @@ package organisationOfPublicTransport.organisationOfPublicTransport;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Time;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.TemporalUnit;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
@@ -52,12 +57,14 @@ public class MainMenuController implements Initializable  {
 	
 	private ObservableList<Bus> busses; 
 	private ObservableList<Terminal> terminals; 
+	private ObservableList<Bus> getAllBuses;
 	private ObservableList<Route> routes;
 	
 	//has to be initialized because I can't shutdown null
 	//used for refreshing the bus menu every 10 secs
 	ScheduledExecutorService busExecutor = Executors.newScheduledThreadPool(1);
 	ScheduledExecutorService routeExecutor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService actionsExecutor = Executors.newScheduledThreadPool(1);
 	
 	/* BUS */
 	
@@ -228,7 +235,7 @@ public class MainMenuController implements Initializable  {
 					@Override
 					public void handle(WorkerStateEvent event) {
 						
-						ObservableList<Bus> getAllBuses = task2.getValue();
+						getAllBuses = task2.getValue();
 						cdLatch.countDown();
 						
 						
@@ -299,8 +306,20 @@ public class MainMenuController implements Initializable  {
 	
 	
 	/* ACTIONS */
-	
+	//Not working no time to fully implement
 	public void displayActions() {
+		Runnable Runnable = new Runnable() {
+			public void run() {
+				
+				
+			}
+		};
+
+		routeExecutor = Executors.newScheduledThreadPool(1);
+		routeExecutor.scheduleAtFixedRate(Runnable, 5, 60, TimeUnit.SECONDS);
+	}
+	
+	public void startActions() {
 		
 	}
 
@@ -310,6 +329,9 @@ public class MainMenuController implements Initializable  {
 	public void initialize(URL location, ResourceBundle resources) {
 		displayBusSelection();
 		displayRoutes();
+		
+		//Not working
+		//displayActions();
 	}	
 	
 	

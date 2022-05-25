@@ -38,10 +38,12 @@ public class RoutesService extends Task<ObservableList<Route>>{
 					int routeId = rs.getInt("RouteId");
 					String routeName = rs.getString("RouteName");
 					LocalTime routeDuration = rs.getTime("RouteDuration").toLocalTime();
+					int batteryUsage = rs.getInt("BatteryUsage");
+					int startTerminalId = rs.getInt("StartTerminalID");
 					int destinationTerminalId = rs.getInt("DestinationTerminalId");
 					LocalTime startInvervals = rs.getTime("StartIntervals").toLocalTime();
 					
-					Route route = new Route(routeId, routeName, routeDuration, destinationTerminalId, startInvervals);
+					Route route = new Route(routeId, routeName, routeDuration, batteryUsage, startTerminalId, destinationTerminalId, startInvervals);
 					
 					routes.add(route);		
 				}
