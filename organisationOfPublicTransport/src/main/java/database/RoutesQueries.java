@@ -13,12 +13,12 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
 public class RoutesQueries {
-static Connection conn;
 	
 	//flag is if you want to retrieve all routes present in the table
 	//true to get everything from the table
 	//false to get a specific route
-	public static ResultSet selectRouteById(int routeId, boolean allFlag) throws SQLException {
+	public static ResultSet selectRouteById(int routeId, boolean allFlag, Connection conn) throws SQLException {
+		
 		String query = null;
 		
 		PreparedStatement stmt;		
@@ -38,7 +38,7 @@ static Connection conn;
 		
 	}
 	
-	public static int updateRouteById(int routeId, LocalTime duration, LocalTime startInterval) {
+	public static int updateRouteById(int routeId, LocalTime duration, LocalTime startInterval, Connection conn) {
 		String query = 	"UPDATE Routes " + 
 						"SET RouteDuration = ? , StartIntervals = ? " +
 						"WHERE RouteId = ? ;";
@@ -62,31 +62,4 @@ static Connection conn;
 		return count;
 	}
 	
-	public static Connection establishConnection() throws InterruptedException {
-		CountDownLatch latch = new CountDownLatch(1);
-		Task<Connection> task = new ConnectionToDB();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				conn = task.getValue();
-				latch.countDown();
-			}
-		});
-		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				latch.countDown();
-			}
-		});
-		
-		thread.start();
-
-		latch.await();
-		
-		return conn;
-	}
 }

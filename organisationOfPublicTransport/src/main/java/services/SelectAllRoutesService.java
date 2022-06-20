@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 
+import database.EstablishConnection;
 import database.RoutesQueries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -26,12 +27,12 @@ public class SelectAllRoutesService extends Task<ObservableList<Route>>{
 		ObservableList<Route> routes = null;
 		
 		try {
-			Connection conn = RoutesQueries.establishConnection();
-			
+			Connection conn = EstablishConnection.establishConnection(false, null);
+			 
 			if(conn.isValid(0)) {
 				
 				routes = FXCollections.observableArrayList();
-				ResultSet rs = RoutesQueries.selectRouteById(id, all);
+				ResultSet rs = RoutesQueries.selectRouteById(id, all, conn);
 				
 				while(rs.next()) {
 					

@@ -12,12 +12,11 @@ import javafx.event.EventHandler;
 
 public class BusQueries {
 	
-	static Connection conn;
 	
 	//flag is if you want to retrieve all busses present in the table THAT ARE NOT BROKEN
 	//true to get everything from the table except the broken buses
 	//false to get a specific terminal busses
-	public static ResultSet selectBusQueryByTerminalNotBroken(int terminalId, boolean allFlag) throws SQLException {
+	public static ResultSet selectBusQueryByTerminalNotBroken(int terminalId, boolean allFlag, Connection conn) throws SQLException {
 		
 		String query;
 		
@@ -42,7 +41,7 @@ public class BusQueries {
 		
 	}
 	
-	public static ResultSet selectNotBrokenBusQueryById(int busId) {
+	public static ResultSet selectNotBrokenBusQueryById(int busId, Connection conn) {
 		String query = 	"SELECT * " +
 						"FROM dbo.Bus " +
 						"WHERE BusId = ? and Broken = 'False';";
@@ -61,7 +60,7 @@ public class BusQueries {
 		return rs;
 	}
 	
-	public static void updateBreakABusQueryById(int busId) {
+	public static void updateBreakABusQueryById(int busId, Connection conn) {
 		String query = 	"UPDATE dbo.Bus " + 
 						"SET Broken = 'True' " +
 						"WHERE BusId = ? ;";
@@ -85,7 +84,7 @@ public class BusQueries {
 		
 	}
 	
-	public static ResultSet selectAllBrokenBusesQuery() {
+	public static ResultSet selectAllBrokenBusesQuery(Connection conn) {
 		String query = 	"SELECT * " + 
 						"FROM Bus " + 
 						"WHERE Broken = 'True' ;";
@@ -104,7 +103,7 @@ public class BusQueries {
 		return rs;
 	}
 	
-	public static void updateFixABusQuery(int busId, int terminalId) {
+	public static void updateFixABusQuery(int busId, int terminalId, Connection conn) {
 		String query = 	"UPDATE dbo.Bus " + 
 						"SET Broken = 'False', CurrentTerminalId = ? " +
 						"WHERE BusId = ? ;";
@@ -129,31 +128,4 @@ public class BusQueries {
 		}
 	}
 	
-	public static Connection establishConnection() throws InterruptedException {
-		CountDownLatch latch = new CountDownLatch(1);
-		Task<Connection> task = new ConnectionToDB();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				conn = task.getValue();
-				latch.countDown();
-			}
-		});
-		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				latch.countDown();
-			}
-		});
-		
-		thread.start();
-
-		latch.await();
-		
-		return conn;
-	}
 }

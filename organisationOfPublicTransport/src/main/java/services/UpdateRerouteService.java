@@ -3,6 +3,7 @@ package services;
 import java.sql.Connection;
 import java.time.LocalTime;
 
+import database.EstablishConnection;
 import database.RoutesQueries;
 import javafx.concurrent.Task;
 import javafx.scene.control.Button;
@@ -23,14 +24,14 @@ public class UpdateRerouteService extends Task<Integer> {
 	
 	@Override
 	protected Integer call() throws Exception {
-		Connection conn = RoutesQueries.establishConnection();
+		Connection conn = EstablishConnection.establishConnection(false, null);
 		int successful = 0;
 		
 		
 		if(conn.isValid(0)) {
 			//0 - failed to update
 			//1 - updated successfully
-			successful = RoutesQueries.updateRouteById(id, duration, startIntervals);
+			successful = RoutesQueries.updateRouteById(id, duration, startIntervals, conn);
 		} else {
 			System.out.println("connection failed");
 		}

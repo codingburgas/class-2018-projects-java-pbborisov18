@@ -3,6 +3,7 @@ package services;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
+import database.EstablishConnection;
 import database.TerminalQueries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -14,12 +15,12 @@ public class SelectAllTerminalService extends Task<ObservableList<Terminal>>{
 	@Override
 	protected ObservableList<Terminal> call() throws Exception {
 
-		Connection conn = TerminalQueries.establishConnection();
+		Connection conn = EstablishConnection.establishConnection(false, null);
 		ObservableList<Terminal> terminals = FXCollections.observableArrayList();
 		
 		if(conn.isValid(0)) {
 			
-			ResultSet rs = TerminalQueries.selectAllTerminalsQuery();
+			ResultSet rs = TerminalQueries.selectAllTerminalsQuery(conn);
 			
 			while(rs.next()) {
 				int terminalId = rs.getInt("Id");

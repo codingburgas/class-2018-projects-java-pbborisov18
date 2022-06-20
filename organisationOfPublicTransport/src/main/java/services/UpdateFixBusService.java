@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 import database.BusQueries;
+import database.EstablishConnection;
 import javafx.concurrent.Task;
 
 public class UpdateFixBusService extends Task<Void>{
@@ -21,9 +22,9 @@ public class UpdateFixBusService extends Task<Void>{
 		
 		
 		try {
-			Connection conn = BusQueries.establishConnection();
+			Connection conn = EstablishConnection.establishConnection(false, null);
 			if(conn.isValid(0)) {
-				BusQueries.updateFixABusQuery(id, terminalId);
+				BusQueries.updateFixABusQuery(id, terminalId, conn);
 			} else {
 				System.out.println("connection failed");
 			}

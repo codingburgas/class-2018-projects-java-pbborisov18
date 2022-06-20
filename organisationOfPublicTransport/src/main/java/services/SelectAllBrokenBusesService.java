@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import database.BusQueries;
+import database.EstablishConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -15,11 +16,11 @@ public class SelectAllBrokenBusesService extends Task<ObservableList<Bus>> {
 	@Override
 	protected ObservableList<Bus> call() throws Exception {
 		
-		Connection conn = BusQueries.establishConnection();
+		Connection conn = EstablishConnection.establishConnection(false, null);
 		ObservableList<Bus> buses = FXCollections.observableArrayList();
 		
 		if(conn.isValid(0)) {
-			ResultSet rs = BusQueries.selectAllBrokenBusesQuery();
+			ResultSet rs = BusQueries.selectAllBrokenBusesQuery(conn);
 			
 			while(rs.next()) {
 				

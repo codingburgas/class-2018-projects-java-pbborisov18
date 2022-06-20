@@ -11,11 +11,8 @@ import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
 public class TerminalQueries {
-
-	static Connection conn;
 	
-	
-	public static ResultSet selectAllTerminalsQuery() throws SQLException {
+	public static ResultSet selectAllTerminalsQuery(Connection conn) throws SQLException {
 		
 		String query = "SELECT * " + "FROM Terminals ";
 		
@@ -27,35 +24,6 @@ public class TerminalQueries {
 		rs = stmt.executeQuery();
 		
 		return rs;
-	}
-	
-	public static Connection establishConnection() throws InterruptedException {
-		CountDownLatch latch = new CountDownLatch(1);
-		
-		Task<Connection> task = new ConnectionToDB();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				conn = task.getValue();
-				latch.countDown();
-			}
-		});
-		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				latch.countDown();
-			}
-		});
-		
-		thread.start();
-
-		latch.await();
-		
-		return conn;
 	}
 	
 }

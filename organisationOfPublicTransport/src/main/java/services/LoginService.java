@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+import database.EstablishConnection;
 import database.LoginQuery;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -43,7 +44,7 @@ public class LoginService extends Task<Admin>{
 	private Admin loginLogic() throws SQLException, InterruptedException {
 		ResultSet rs;
 		
-		Connection conn = LoginQuery.establishConnection(objPassword);
+		Connection conn = EstablishConnection.establishConnection(true,objPassword);
 		rs = LoginQuery.selectAllAdminsQuery(conn);		
 		
 		if(userExists(username, rs)) {

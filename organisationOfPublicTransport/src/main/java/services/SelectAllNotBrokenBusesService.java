@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import database.BusQueries;
+import database.EstablishConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -25,12 +26,12 @@ public class SelectAllNotBrokenBusesService extends Task<ObservableList<Bus>> {
 		ObservableList<Bus> busses = null;
 		
 		try {
-			Connection conn = BusQueries.establishConnection();
+			Connection conn = EstablishConnection.establishConnection(false, null);
 		
 			if(conn.isValid(0)) {
 				
 				busses = FXCollections.observableArrayList();
-				ResultSet rs = BusQueries.selectBusQueryByTerminalNotBroken(id, flag);	
+				ResultSet rs = BusQueries.selectBusQueryByTerminalNotBroken(id, flag, conn);	
 				
 				while(rs.next()) {
 					

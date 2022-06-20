@@ -4,6 +4,7 @@ package services;
 import java.sql.Connection;
 
 import database.BusQueries;
+import database.EstablishConnection;
 import javafx.concurrent.Task;
 
 public class UpdateBreakBusService extends Task<Void>{
@@ -17,10 +18,10 @@ public class UpdateBreakBusService extends Task<Void>{
 	@Override
 	protected Void call() throws Exception {
 		
-		Connection conn = BusQueries.establishConnection();
+		Connection conn = EstablishConnection.establishConnection(false, null);
 		
 		if(conn.isValid(0)) {
-			BusQueries.updateBreakABusQueryById(id);
+			BusQueries.updateBreakABusQueryById(id, conn);
 			
 		} else {
 			System.out.println("connection failed");

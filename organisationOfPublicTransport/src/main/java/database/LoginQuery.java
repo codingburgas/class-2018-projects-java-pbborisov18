@@ -16,8 +16,6 @@ import organisationOfPublicTransport.organisationOfPublicTransport.App;
 
 public class LoginQuery{
 
-	static Connection conn;
-
 	public static ResultSet selectAllAdminsQuery(Connection conn) {
 		String query = "SELECT * " + "FROM dbo.AdminsShift ";
 		
@@ -33,40 +31,6 @@ public class LoginQuery{
 			e.printStackTrace();
 		}
 		return rs;
-	}
-	
-	public static Connection establishConnection(PasswordField objPassword) throws InterruptedException {
-		CountDownLatch latch = new CountDownLatch(1);
-		Task<Connection> task = new ConnectionToDB();
-		Thread thread = new Thread(task);
-		thread.setDaemon(true);
-		
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				conn = task.getValue();
-				latch.countDown();
-			}
-		});
-		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						App.dialogs("Connection failed!", "Connection failed!", AlertType.ERROR, objPassword.getScene());
-					}
-				});
-				latch.countDown();
-			}
-		});
-		
-		thread.start();
-
-		latch.await();
-		
-		return conn;
 	}
 	
 }

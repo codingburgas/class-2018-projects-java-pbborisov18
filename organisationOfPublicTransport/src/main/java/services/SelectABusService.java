@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 
 import database.BusQueries;
+import database.EstablishConnection;
 import javafx.concurrent.Task;
 import models.Bus;
 
@@ -18,10 +19,10 @@ public class SelectABusService extends Task<Bus> {
 	@Override
 	protected Bus call() throws Exception {
 		
-		Connection conn = BusQueries.establishConnection();
+		Connection conn = EstablishConnection.establishConnection(false, null);
 		Bus bus = null;
 		if(conn.isValid(0)) {
-			ResultSet rs = BusQueries.selectNotBrokenBusQueryById(id);
+			ResultSet rs = BusQueries.selectNotBrokenBusQueryById(id, conn);
 			
 			while(rs.next()) {
 				int busId = rs.getInt("BusId");
