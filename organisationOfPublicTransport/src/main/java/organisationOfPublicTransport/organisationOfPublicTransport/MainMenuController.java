@@ -33,9 +33,9 @@ import javafx.util.StringConverter;
 import models.Bus;
 import models.Route;
 import models.Terminal;
-import services.BusesService;
-import services.RoutesService;
-import services.TerminalService;
+import services.SelectAllNotBrokenBusesService;
+import services.SelectAllRoutesService;
+import services.SelectAllTerminalService;
 
 public class MainMenuController implements Initializable  {
 	
@@ -75,7 +75,7 @@ public class MainMenuController implements Initializable  {
 		    public void run() {
 		    	busses = FXCollections.observableArrayList();
 		    	
-		    	Task<ObservableList<Bus>> task = new BusesService(id, flag);
+		    	Task<ObservableList<Bus>> task = new SelectAllNotBrokenBusesService(id, flag);
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
 				
@@ -101,7 +101,7 @@ public class MainMenuController implements Initializable  {
 	
 	//Displays the terminals in the combo box in the correct way
 	public void displayBusSelection() {
-		Task<ObservableList<Terminal>> task = new TerminalService();
+		Task<ObservableList<Terminal>> task = new SelectAllTerminalService();
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 
@@ -220,12 +220,12 @@ public class MainMenuController implements Initializable  {
 		    	CountDownLatch cdLatch = new CountDownLatch(1);
 		    	
 		    	//Get all Buses in db
-		    	Task<ObservableList<Bus>> task2 = new BusesService(0, true);;
+		    	Task<ObservableList<Bus>> task2 = new SelectAllNotBrokenBusesService(0, true);;
 				Thread thread2 = new Thread(task2);
 				thread2.setDaemon(true);
 		    	
 				//Get all Routes in db
-		    	Task<ObservableList<Route>> task = new RoutesService(0, true);;
+		    	Task<ObservableList<Route>> task = new SelectAllRoutesService(0, true);;
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
 				
@@ -311,7 +311,30 @@ public class MainMenuController implements Initializable  {
 		Runnable Runnable = new Runnable() {
 			public void run() {
 				
+				LocalTime start = LocalTime.of(6, 0);
+				LocalTime now = LocalTime.now();
 				
+				
+				LocalTime end = LocalTime.of(23, 00);
+				
+				for (Route route : routes) {
+					//System.out.println(route.routeName());
+					LocalTime nextStart = LocalTime.of(6, 0);
+					
+					LocalTime interval = route.startIntervals();
+					
+					while(nextStart.isBefore(end)) {
+						nextStart = nextStart.plusHours(interval.getHour());
+						nextStart = nextStart.plusMinutes(interval.getMinute());
+						//System.out.println(nextStart);
+						/*for (Bus bus : buses) {
+							if(bus.currentTerminalId() == route.startTerminalId() && bus.battery() > route.batteryUsage()) {
+								
+							}
+						}*/
+					}					
+					
+				}
 			}
 		};
 
@@ -330,8 +353,9 @@ public class MainMenuController implements Initializable  {
 		displayBusSelection();
 		displayRoutes();
 		
+		 
 		//Not working
-		//displayActions();
+		displayActions();
 	}	
 	
 	

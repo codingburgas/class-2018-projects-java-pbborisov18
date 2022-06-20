@@ -143,14 +143,10 @@ public class BrokenBusMenuController {
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
     		
-    		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-    			@Override
-    			public void handle(WorkerStateEvent event) {
-    				App.dialogs("Succesfully updated!", "Successfully updated!", AlertType.INFORMATION, no.getScene());
-    				Stage stage = (Stage) no.getScene().getWindow();
-    				stage.close();
-    			}
-    		});
+    		
+    		App.dialogs("Succesfully updated!", "Successfully updated!", AlertType.INFORMATION, no.getScene());
+    		
+    		stage.close();
     		
     		thread.start();
 		});

@@ -12,13 +12,13 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
-public class RoutesQuery {
+public class RoutesQueries {
 static Connection conn;
 	
 	//flag is if you want to retrieve all routes present in the table
 	//true to get everything from the table
 	//false to get a specific route
-	public static ResultSet executeSelectRoutes(int routeId, boolean allFlag) throws SQLException {
+	public static ResultSet selectRouteById(int routeId, boolean allFlag) throws SQLException {
 		String query = null;
 		
 		PreparedStatement stmt;		
@@ -38,11 +38,11 @@ static Connection conn;
 		
 	}
 	
-	public static void executeUpdateRoute(int routeId, LocalTime duration, LocalTime startInterval) {
+	public static int updateRouteById(int routeId, LocalTime duration, LocalTime startInterval) {
 		String query = 	"UPDATE Routes " + 
 						"SET RouteDuration = ? , StartIntervals = ? " +
 						"WHERE RouteId = ? ;";
-
+		int count = 0;
 		PreparedStatement stmt = null;
 
 		try {
@@ -51,17 +51,15 @@ static Connection conn;
 			stmt.setTime(2, Time.valueOf(startInterval));
 			stmt.setInt(3, routeId);
 			
-			int count = stmt.executeUpdate();
+			count = stmt.executeUpdate();
 
-			if(count > 0 ) {
-				System.out.println("Successfully updated!");
-			} else {
-				System.out.println("Failed to update!");
-			}
+			return count;
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}	
+		
+		return count;
 	}
 	
 	public static Connection establishConnection() throws InterruptedException {

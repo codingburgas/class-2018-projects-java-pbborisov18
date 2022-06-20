@@ -5,18 +5,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalTime;
 
-import database.RoutesQuery;
+import database.RoutesQueries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Route;
 
-public class RoutesService extends Task<ObservableList<Route>>{
+public class SelectAllRoutesService extends Task<ObservableList<Route>>{
 
 	private int id;
 	private boolean all; 
 	
-	public RoutesService(int id, boolean all){
+	public SelectAllRoutesService(int id, boolean all){
 		this.id = id;
 		this.all = all;
 	}
@@ -26,12 +26,12 @@ public class RoutesService extends Task<ObservableList<Route>>{
 		ObservableList<Route> routes = null;
 		
 		try {
-			Connection conn = RoutesQuery.establishConnection();
+			Connection conn = RoutesQueries.establishConnection();
 			
 			if(conn.isValid(0)) {
 				
 				routes = FXCollections.observableArrayList();
-				ResultSet rs = RoutesQuery.executeSelectRoutes(id, all);
+				ResultSet rs = RoutesQueries.selectRouteById(id, all);
 				
 				while(rs.next()) {
 					
@@ -49,7 +49,7 @@ public class RoutesService extends Task<ObservableList<Route>>{
 				}
 			conn.close();	
 			} else {
-				System.out.println("connection is down");
+				System.out.println("SelectAllRoutesService: connection is down");
 			}
 		}  catch(SQLException | InterruptedException e) {
 			e.printStackTrace();

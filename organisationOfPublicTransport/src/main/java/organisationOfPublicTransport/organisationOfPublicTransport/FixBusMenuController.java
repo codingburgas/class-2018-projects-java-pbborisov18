@@ -17,8 +17,8 @@ import javafx.stage.Stage;
 import javafx.util.StringConverter;
 import models.Bus;
 import models.Terminal;
-import services.BrokenBusService;
-import services.TerminalService;
+import services.SelectAllBrokenBusesService;
+import services.SelectAllTerminalService;
 import services.UpdateFixBusService;
 
 public class FixBusMenuController implements Initializable{
@@ -38,7 +38,7 @@ public class FixBusMenuController implements Initializable{
 
 	public void displayTerminals() {
 			
-			Task<ObservableList<Terminal>> task = new TerminalService();
+			Task<ObservableList<Terminal>> task = new SelectAllTerminalService();
 			Thread thread = new Thread(task);
 			thread.setDaemon(true);
 			
@@ -74,7 +74,7 @@ public class FixBusMenuController implements Initializable{
 
 	
 	public void displayBrokenBusses() {
-		Task<ObservableList<Bus>> task = new BrokenBusService();
+		Task<ObservableList<Bus>> task = new SelectAllBrokenBusesService();
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 		

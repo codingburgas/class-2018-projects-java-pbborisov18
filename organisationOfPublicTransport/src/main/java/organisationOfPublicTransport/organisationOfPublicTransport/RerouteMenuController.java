@@ -15,13 +15,11 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Stage;
 import models.Route;
-import services.RoutesService;
-import services.UpdateBreakBusService;
+import services.SelectAllRoutesService;
 import services.UpdateRerouteService;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 
 public class RerouteMenuController {
@@ -65,7 +63,7 @@ public class RerouteMenuController {
 	public void rerouteListener(ActionEvent event) {
 		if(isNumeric(txtRouteId.getText())) {
 			
-			Task<ObservableList<Route>> task = new RoutesService(Integer.parseInt(txtRouteId.getText()), false);
+			Task<ObservableList<Route>> task = new SelectAllRoutesService(Integer.parseInt(txtRouteId.getText()), false);
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
     		
@@ -74,7 +72,7 @@ public class RerouteMenuController {
 				public void handle(WorkerStateEvent event) {
 					ObservableList<Route> routeList = task.getValue();
 					
-					//Add a null to the list so no exception is thrown at 39
+					//Add a null to the list so no exception is thrown at the next line if the list happens to be empty
 					routeList.add(null);
 					Route route = routeList.get(0);
 					
@@ -121,12 +119,30 @@ public class RerouteMenuController {
 			LocalTime duration = LocalTime.of(hrDuration.getValue(), minDuration.getValue());
 			LocalTime startIntervals = LocalTime.of(hrStartIntervals.getValue(), minStartIntervals.getValue());
 		
-			Task<Void> task = new UpdateRerouteService(route.routeId(), duration, startIntervals);
+			Task<Integer> task = new UpdateRerouteService(route.routeId(), duration, startIntervals, update);
     		
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
     		
-    		
+    		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+				@Override
+				public void handle(WorkerStateEvent event) {
+					try{
+						if(task.getValue() == 1) {
+							App.dialogs("Successfuly updated", "Successfuly updated!", AlertType.INFORMATION, update.getScene());
+						} else {
+							App.dialogs("Failed to update", "Failed to update!", AlertType.INFORMATION, update.getScene());
+						}
+					} catch(NullPointerException e) {
+						App.dialogs("Failed to update", "Failed to update!", AlertType.INFORMATION, update.getScene());
+						System.out.println(e);
+						Stage stage = (Stage) update.getScene().getWindow();
+			    		stage.close();
+					}
+					
+					
+				}
+    		});
     		
     		thread.start();
 		});
@@ -138,14 +154,14 @@ public class RerouteMenuController {
 		
 		routeDestination.setText(String.valueOf(route.destinationTerminal()));
 		
-		hrDuration.setItems(hours());
+		hrDuration.setItems(hoursList());
 		hrDuration.getSelectionModel().select(route.routeDuration().getHour());
-		minDuration.setItems(mins());
+		minDuration.setItems(minsList());
 		minDuration.getSelectionModel().select(route.routeDuration().getMinute());
 		
-		hrStartIntervals.setItems(hours());
+		hrStartIntervals.setItems(hoursList());
 		hrStartIntervals.getSelectionModel().select(route.startIntervals().getHour());
-		minStartIntervals.setItems(mins());
+		minStartIntervals.setItems(minsList());
 		minStartIntervals.getSelectionModel().select(route.startIntervals().getMinute());
 		
 		routeDestination.setDisable(true);
@@ -153,7 +169,7 @@ public class RerouteMenuController {
 		routeId.setDisable(true);
 	}	
 
-	public ObservableList<Integer> mins(){
+	public ObservableList<Integer> minsList(){
 		ObservableList<Integer> minutes = FXCollections.observableArrayList();
 
 		for (int i = 0; i <= 59; i++){
@@ -164,7 +180,7 @@ public class RerouteMenuController {
 		
 	}
 	
-	public ObservableList<Integer> hours(){
+	public ObservableList<Integer> hoursList(){
 		ObservableList<Integer> hours = FXCollections.observableArrayList();
 
 		for (int i = 0; i <= 23; i++){
@@ -177,7 +193,7 @@ public class RerouteMenuController {
 	
 	public boolean routeExists(Route route) {
 		if(route == null) {
-			App.dialogs("Bus with that Id doesn't exist", "Bus with that Id doesn't exist or is already broken!", AlertType.INFORMATION, txtRouteId.getScene());   
+			App.dialogs("Route with that Id doesn't exist", "Route with that Id doesn't exist!", AlertType.INFORMATION, txtRouteId.getScene());   
 			return false;
 		}
 		
@@ -185,7 +201,6 @@ public class RerouteMenuController {
 	}
 	
 	public boolean isNumeric(String string) {
-	    int intValue;
 			
 	   	
 	    if(string.equals("")) {
@@ -194,7 +209,7 @@ public class RerouteMenuController {
 	    }
 	    
 	    try {
-	        intValue = Integer.parseInt(string);
+	        int intValue = Integer.parseInt(string);
 	        return true;
 	    } catch (NumberFormatException e) {
 	    	App.dialogs("Id field can be only a number", "Id field can only be a number", AlertType.INFORMATION, txtRouteId.getScene());

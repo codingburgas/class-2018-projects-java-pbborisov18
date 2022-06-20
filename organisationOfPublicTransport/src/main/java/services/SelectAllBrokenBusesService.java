@@ -3,23 +3,23 @@ package services;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import database.BrokenBusQuery;
+import database.BusQueries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Bus;
 
-public class BrokenBusService extends Task<ObservableList<Bus>> {
+public class SelectAllBrokenBusesService extends Task<ObservableList<Bus>> {
 
 	
 	@Override
 	protected ObservableList<Bus> call() throws Exception {
 		
-		Connection conn = BrokenBusQuery.establishConnection();
+		Connection conn = BusQueries.establishConnection();
 		ObservableList<Bus> buses = FXCollections.observableArrayList();
 		
 		if(conn.isValid(0)) {
-			ResultSet rs = BrokenBusQuery.executeSelectBrokenBusesQuery();
+			ResultSet rs = BusQueries.selectAllBrokenBusesQuery();
 			
 			while(rs.next()) {
 				
@@ -37,7 +37,9 @@ public class BrokenBusService extends Task<ObservableList<Bus>> {
 				buses.add(a);
 			}
 		}
+		
 		conn.close();
+		
 		return buses;
 	}
 

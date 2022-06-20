@@ -9,7 +9,7 @@ import models.Bus;
 import models.Route;
 
 
-//NOT WORKING
+//NOT WORKING AND NOT IN USE
 public class ActionsService extends Task<ObservableList<Action>>{
 
 	private ObservableList<Bus> buses;
@@ -38,11 +38,11 @@ public class ActionsService extends Task<ObservableList<Action>>{
 				nextStart = nextStart.plusHours(interval.getHour());
 				nextStart = nextStart.plusMinutes(interval.getMinute());
 				
-				for (Bus bus : buses) {
+				/*for (Bus bus : buses) {
 					if(bus.currentTerminalId() == route.startTerminalId() && bus.battery() > route.batteryUsage()) {
 						
 					}
-				}
+				}*/
 			}					
 			
 		}

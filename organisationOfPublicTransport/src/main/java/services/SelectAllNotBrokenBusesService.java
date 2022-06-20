@@ -4,18 +4,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import database.BusQuery;
+import database.BusQueries;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Bus;
 
-public class BusesService extends Task<ObservableList<Bus>> {
+public class SelectAllNotBrokenBusesService extends Task<ObservableList<Bus>> {
 
 	int id;
 	boolean flag;
 	
-	public BusesService(int id, boolean flag){
+	public SelectAllNotBrokenBusesService(int id, boolean flag){
 		this.id = id;
 		this.flag = flag;
 	}
@@ -25,12 +25,12 @@ public class BusesService extends Task<ObservableList<Bus>> {
 		ObservableList<Bus> busses = null;
 		
 		try {
-			Connection conn = BusQuery.establishConnection();
+			Connection conn = BusQueries.establishConnection();
 		
 			if(conn.isValid(0)) {
 				
 				busses = FXCollections.observableArrayList();
-				ResultSet rs = BusQuery.executeBusQuery(id, flag);	
+				ResultSet rs = BusQueries.selectBusQueryByTerminalNotBroken(id, flag);	
 				
 				while(rs.next()) {
 					
@@ -49,7 +49,7 @@ public class BusesService extends Task<ObservableList<Bus>> {
 				}
 			conn.close();	
 			} else {
-				System.out.println("connection is down");
+				System.out.println("SelectAllNotBrokenBusesService: Connection is down");
 			}
 		} catch (SQLException | InterruptedException e) {
 			// TODO Auto-generated catch block

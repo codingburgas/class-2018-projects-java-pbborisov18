@@ -44,7 +44,7 @@ public class LoginService extends Task<Admin>{
 		ResultSet rs;
 		
 		Connection conn = LoginQuery.establishConnection(objPassword);
-		rs = LoginQuery.executeLoginQuery(conn);		
+		rs = LoginQuery.selectAllAdminsQuery(conn);		
 		
 		if(userExists(username, rs)) {
 

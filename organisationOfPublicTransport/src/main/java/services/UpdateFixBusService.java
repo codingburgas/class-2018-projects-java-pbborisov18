@@ -1,8 +1,9 @@
 package services;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
-import database.BrokenBusQuery;
+import database.BusQueries;
 import javafx.concurrent.Task;
 
 public class UpdateFixBusService extends Task<Void>{
@@ -16,16 +17,23 @@ public class UpdateFixBusService extends Task<Void>{
 	}
 	
 	@Override
-	protected Void call() throws Exception {
+	protected Void call() {
 		
-		Connection conn = BrokenBusQuery.establishConnection();
 		
-		if(conn.isValid(0)) {
-			BrokenBusQuery.executeFixABusQuery(id, terminalId);
-		} else {
-			System.out.println("connection failed");
+		try {
+			Connection conn = BusQueries.establishConnection();
+			if(conn.isValid(0)) {
+				BusQueries.updateFixABusQuery(id, terminalId);
+			} else {
+				System.out.println("connection failed");
+			}
+			conn.close();
+		} catch (InterruptedException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		conn.close();
+		
+		
 		return null;
 	}
 }

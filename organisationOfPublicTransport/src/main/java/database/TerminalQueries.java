@@ -10,40 +10,28 @@ import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
 
-public class BusQuery {
-	
+public class TerminalQueries {
+
 	static Connection conn;
 	
-	//flag is if you want to retrieve all busses present in the table THAT ARE NOT BROKEN
-	//true to get everything from the table except the broken buses
-	//false to get a specific terminal busses
-	public static ResultSet executeBusQuery(int terminalId, boolean allFlag) throws SQLException {
+	
+	public static ResultSet selectAllTerminalsQuery() throws SQLException {
 		
-		String query;
+		String query = "SELECT * " + "FROM Terminals ";
 		
 		PreparedStatement stmt;
+		ResultSet rs = null;
 		
-		if(allFlag) {
-			query = "SELECT * " + "FROM Bus " + "WHERE Broken = 'False'" ;
-			stmt = conn.prepareStatement(query);
-	
-		} else {
-			
-			query = "SELECT * " + "FROM Bus " + "WHERE CurrentTerminalId = ? AND Broken = 'False'" ;
-			
-			stmt = conn.prepareStatement(query);
-			stmt.setInt(1, terminalId);
-			
-		}
+		stmt = conn.prepareStatement(query);
 		
-		ResultSet rs = stmt.executeQuery();
+		rs = stmt.executeQuery();
 		
 		return rs;
-		
 	}
 	
 	public static Connection establishConnection() throws InterruptedException {
 		CountDownLatch latch = new CountDownLatch(1);
+		
 		Task<Connection> task = new ConnectionToDB();
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
@@ -69,4 +57,5 @@ public class BusQuery {
 		
 		return conn;
 	}
+	
 }

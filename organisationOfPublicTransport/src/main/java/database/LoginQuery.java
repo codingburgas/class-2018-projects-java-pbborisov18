@@ -18,7 +18,7 @@ public class LoginQuery{
 
 	static Connection conn;
 
-	public static ResultSet executeLoginQuery(Connection conn) {
+	public static ResultSet selectAllAdminsQuery(Connection conn) {
 		String query = "SELECT * " + "FROM dbo.AdminsShift ";
 		
 		PreparedStatement stmt;

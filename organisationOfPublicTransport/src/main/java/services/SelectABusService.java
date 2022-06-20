@@ -3,7 +3,7 @@ package services;
 import java.sql.Connection;
 import java.sql.ResultSet;
 
-import database.BrokenBusQuery;
+import database.BusQueries;
 import javafx.concurrent.Task;
 import models.Bus;
 
@@ -18,10 +18,10 @@ public class SelectABusService extends Task<Bus> {
 	@Override
 	protected Bus call() throws Exception {
 		
-		Connection conn = BrokenBusQuery.establishConnection();
+		Connection conn = BusQueries.establishConnection();
 		Bus bus = null;
 		if(conn.isValid(0)) {
-			ResultSet rs = BrokenBusQuery.executeSelectNotBrokenBusQuery(id);
+			ResultSet rs = BusQueries.selectNotBrokenBusQueryById(id);
 			
 			while(rs.next()) {
 				int busId = rs.getInt("BusId");
@@ -42,7 +42,7 @@ public class SelectABusService extends Task<Bus> {
 			return bus;
 			
 		} else {
-			System.out.println("connection is down");
+			System.out.println("SelectABusService: Connection is down");
 		}
 		conn.close();
 		return null;

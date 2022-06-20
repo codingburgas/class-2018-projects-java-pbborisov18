@@ -1,6 +1,6 @@
 package models;
 
-public record Action(int id, String action) {
+public record Action(int id, int busId, String action) {
 	
 
 }
