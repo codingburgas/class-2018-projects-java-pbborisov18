@@ -64,8 +64,8 @@ public class RouteListViewCell extends ListCell<Route>{
              ArrayList<String> busIds = new ArrayList<String>();
              
              for (Bus bus : buses) {
-            	 if(bus.currentRouteId() == route.routeId()) {
-            		 busIds.add(Integer.toString(bus.busId()));
+            	 if(bus.getCurrentRouteId() == route.routeId()) {
+            		 busIds.add(Integer.toString(bus.getBusId()));
             	 }
              }
              activeBusses.setText("Current Buses Active: " +  busIds.toString());

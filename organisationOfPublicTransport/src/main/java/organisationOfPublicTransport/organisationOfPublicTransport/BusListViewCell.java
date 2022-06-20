@@ -51,15 +51,15 @@ public class BusListViewCell extends ListCell<Bus> {
 
 	         	}
 	    	 
-	    	 if(bus.charging().equals(true)) {
+	    	 if(bus.isCharging().equals(true)) {
 	    		activeStatus.setFill(Color.YELLOW); 
 	    	 } else {
 	    		activeStatus.setFill(Color.GREEN);
 	    	 }
 	    	 
-	    	 busName.setText(bus.busName());
-	    	 battery.setText("Battery: " + String.valueOf(bus.battery()));
-	    	 route.setText("Route: " + String.valueOf(bus.currentRouteId()));
+	    	 busName.setText(bus.getBusName());
+	    	 battery.setText("Battery: " + String.valueOf(bus.getBattery()));
+	    	 route.setText("Route: " + String.valueOf(bus.getCurrentRouteId()));
 	    	 
 	         setText(null);
 	         setGraphic(anchorPane);

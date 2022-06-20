@@ -12,7 +12,7 @@ public class BrokenBusBoxCell extends ListCell<Bus> {
 	         setText(null);
 	         setGraphic(null);
 	     } else {
-	    	 setText(item.busName());
+	    	 setText(item.getBusName());
 	     }
 	}
 }

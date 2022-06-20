@@ -93,7 +93,7 @@ public class FixBusMenuController implements Initializable{
 					@Override
 					public String toString(Bus object) {
 						
-						return object.busName();
+						return object.getBusName();
 					}
 
 					@Override
@@ -125,7 +125,7 @@ public class FixBusMenuController implements Initializable{
 	
 	public void confirmButton(ActionEvent event) {
 			
-		Task<Void> task = new UpdateFixBusService(	busCombobox.getValue().busId(), 
+		Task<Void> task = new UpdateFixBusService(	busCombobox.getValue().getBusId(), 
 													terminalCombobox.getValue().terminalId());
 		
 		Thread thread = new Thread(task);

@@ -138,7 +138,7 @@ public class BrokenBusMenuController {
 	
 		
 		yes.setOnAction(event -> {
-			Task<Void> task = new UpdateBreakBusService(bus.busId());
+			Task<Void> task = new UpdateBreakBusService(bus.getBusId());
     		
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
@@ -154,15 +154,15 @@ public class BrokenBusMenuController {
 	}
 
 	public void assignValuesToConfirmationItems(Bus bus) {
-		if(bus.charging().equals(true)) {
+		if(bus.isCharging().equals(true)) {
     		activeStatus.setFill(Color.YELLOW); 
     	} else {
     		activeStatus.setFill(Color.GREEN);
     	}
 		
-		busName.setText(bus.busName());
-		battery.setText("Battery: " + bus.battery());
-   	 	route.setText("Route: " + bus.currentRouteId());
+		busName.setText(bus.getBusName());
+		battery.setText("Battery: " + bus.getBattery());
+   	 	route.setText("Route: " + bus.getCurrentRouteId());
 	}
 	
 	public void rearrangeConfirmationMenu(Button noButton, Button yesButton) {
