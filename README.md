@@ -13,6 +13,7 @@ The aim of the project is to organise a city's electric public transport with Ja
 * Java 17.0.2
 * JavaFX (OpenJFX) 17.0.1
 * Apache Maven 3.8.5
+* Google Guava 31.1
 
 ## Launch
 1. Clone the repository
