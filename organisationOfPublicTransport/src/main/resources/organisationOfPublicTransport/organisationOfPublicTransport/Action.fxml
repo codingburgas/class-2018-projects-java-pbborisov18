@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="82.0" prefWidth="345.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="busName" layoutX="28.0" layoutY="14.0" />
+      <Label fx:id="actionLabel" layoutX="28.0" layoutY="41.0" />
+      <Label fx:id="timeLabel" layoutX="183.0" layoutY="14.0" />
+   </children>
+</AnchorPane>

@@ -56,7 +56,7 @@ public class LoginService extends Task<Admin>{
 					@Override
 					public void run() {
 						try {
-							App.setRoot("primary");
+							App.setRoot("MainMenu");
 							
 						} catch (IOException e) {
 							// TODO Auto-generated catch block

@@ -1,6 +1,7 @@
 package models;
 
-public record Action(int id, int busId, String action) {
-	
+import java.time.LocalTime;
 
+public record Action(int busId, LocalTime time, String action) {
+	
 }

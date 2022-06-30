@@ -48,32 +48,32 @@ public class RouteListViewCell extends ListCell<Route>{
 	         setGraphic(null);
 	     } else {
 	    	 if (mLLoader == null) {
-	                mLLoader = new FXMLLoader(getClass().getResource("Route.fxml"));
-	                mLLoader.setController(this);
+	    		 mLLoader = new FXMLLoader(getClass().getResource("Route.fxml"));
+	    		 mLLoader.setController(this);
 
-	                try {
-	                    mLLoader.load();
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
+	    		 try {
+	    			 mLLoader.load();
+	    		 } catch (IOException e) {
+	    			 e.printStackTrace();
+	    		 }
 
-	         	}
-             
-             routeName.setText(route.routeName());
-             
-             ArrayList<String> busIds = new ArrayList<String>();
-             
-             for (Bus bus : buses) {
-            	 if(bus.getCurrentRouteId() == route.routeId()) {
-            		 busIds.add(Integer.toString(bus.getBusId()));
-            	 }
-             }
-             activeBusses.setText("Current Buses Active: " +  busIds.toString());
-             //nextBusToStartRoute.setText("test");
-             //nextBusToArrive.setText("test");
-             
-             setText(null);
-             setGraphic(anchorPane);
+	    	 }
+
+	    	 routeName.setText(route.routeName());
+
+	    	 ArrayList<String> busIds = new ArrayList<String>();
+
+	    	 for (Bus bus : buses) {
+	    		 if(bus.getCurrentRouteId() == route.routeId()) {
+	    			 busIds.add(Integer.toString(bus.getBusId()));
+	    		 }
+	    	 }
+	    	 activeBusses.setText("Current Buses Active: " +  busIds.toString());
+	    	 //nextBusToStartRoute.setText("test");
+	    	 //nextBusToArrive.setText("test");
+
+	    	 setText(null);
+	    	 setGraphic(anchorPane);
 	     }
 	}
 	

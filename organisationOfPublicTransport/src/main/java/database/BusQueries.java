@@ -9,6 +9,7 @@ import java.util.concurrent.CountDownLatch;
 import javafx.concurrent.Task;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.EventHandler;
+import models.Bus;
 
 public class BusQueries {
 	
@@ -127,5 +128,54 @@ public class BusQueries {
 			e.printStackTrace();
 		}
 	}
+	
+	public static int insertAddABus(Bus bus, Connection conn) {
+		String query = 	"DBCC CHECKIDENT (Bus, RESEED, 0)"
+					  + "DBCC CHECKIDENT (Bus)"
+					  + "INSERT INTO dbo.Bus VALUES (?,?,?,?,?,?,?);";
+		
+		
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(query);
+			stmt.setString(1, bus.getBusName());
+			stmt.setInt(2, bus.getCurrentRouteId());
+			stmt.setInt(3, bus.getCurrentTerminalId());
+			stmt.setBoolean(4, bus.isBroken());
+			stmt.setBoolean(5, bus.isCharging());
+			stmt.setInt(6, bus.getBattery());
+			stmt.setInt(7, bus.getDelay());
+			
+			int count = stmt.executeUpdate();
+
+			return count;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 1;
+		}
+	}
+	
+	public static int deleteABus(int id, Connection conn) {
+		String query = 	"DELETE FROM Bus WHERE busId = ?;";
+		
+		
+		PreparedStatement stmt = null;
+
+		try {
+			stmt = conn.prepareStatement(query);
+			
+			int count = stmt.executeUpdate();
+
+			return count;
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return 1;
+		}
+	}
+	
+	
 	
 }

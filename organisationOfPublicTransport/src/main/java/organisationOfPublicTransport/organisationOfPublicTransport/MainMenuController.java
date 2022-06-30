@@ -7,12 +7,14 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.TemporalUnit;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -27,12 +29,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
+import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
+import models.Action;
 import models.Bus;
 import models.Route;
 import models.Terminal;
+import services.ActionsService;
+import services.SelectActionsService;
 import services.SelectAllNotBrokenBusesService;
 import services.SelectAllRoutesService;
 import services.SelectAllTerminalService;
@@ -53,12 +59,15 @@ public class MainMenuController implements Initializable  {
 	@FXML
 	private ListView<Route> routeListView;
 	
-	
+	/* ACTIONS MENU */
+	@FXML
+	private ListView<Action> actionListView;
 	
 	private ObservableList<Bus> busses; 
 	private ObservableList<Terminal> terminals; 
 	private ObservableList<Bus> getAllBuses;
 	private ObservableList<Route> routes;
+	private ObservableList<Action> actions;
 	
 	//has to be initialized because I can't shutdown null
 	//used for refreshing the bus menu every 10 secs
@@ -166,9 +175,14 @@ public class MainMenuController implements Initializable  {
 			stage.initOwner(brokenBusButton.getScene().getWindow());
 			//stage.resizableProperty().setValue(false);
 			//stage.initStyle(StageStyle.TRANSPARENT);
-			stage.initModality(Modality.APPLICATION_MODAL);
+			//stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();
 
+			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
+	            if(!stage.isFocused())
+	                Platform.runLater(() -> stage.close());
+	        });
+			
 			//Might be useful later when I focus on UI
 			/*if(!stage.isFocused()) {
 				stage.hide();
@@ -195,7 +209,13 @@ public class MainMenuController implements Initializable  {
 			//stage.initStyle(StageStyle.TRANSPARENT);
 			stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();
-
+			
+			//When there are no buses a popup appears telling the user that -> window loses focus and closes together with its child
+			/*stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
+	            if(!stage.isFocused())
+	                Platform.runLater(() -> stage.close());
+	        });*/
+	        
 			//Might be useful later when I focus on UI
 			/*if(!stage.isFocused()) {
 				stage.hide();
@@ -279,6 +299,7 @@ public class MainMenuController implements Initializable  {
 		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
 	}
 
+	//If the reroute button is pressed
 	public void rerouteListener(ActionEvent event) {
 		Parent part;
 		try {
@@ -289,9 +310,15 @@ public class MainMenuController implements Initializable  {
 			stage.initOwner(brokenBusButton.getScene().getWindow());
 			//stage.resizableProperty().setValue(false);
 			//stage.initStyle(StageStyle.TRANSPARENT);
-			stage.initModality(Modality.APPLICATION_MODAL);
+			//stage.initModality(Modality.APPLICATION_MODAL);
 			stage.show();
-
+			
+			
+			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
+	            if(!stage.isFocused())
+	                Platform.runLater(() -> stage.close());
+	        });
+			
 			//Might be useful later when I focus on UI
 			/*if(!stage.isFocused()) {
 				stage.hide();
@@ -306,44 +333,49 @@ public class MainMenuController implements Initializable  {
 	
 	
 	/* ACTIONS */
-	//Not working no time to fully implement
+	//Displays actions
 	public void displayActions() {
 		Runnable Runnable = new Runnable() {
 			public void run() {
+				Task<ObservableList<Action>> task2 = new SelectActionsService();
+				Thread thread2 = new Thread(task2);
+				thread2.setDaemon(true);
 				
-				LocalTime start = LocalTime.of(6, 0);
-				LocalTime now = LocalTime.now();
+				task2.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+					@Override
+					public void handle(WorkerStateEvent event) {
+						// TODO Auto-generated method stub
+						actions = task2.getValue();
+						actionListView.setItems(actions);			
+						
+						
+						actionListView.setCellFactory(busses -> new ActionListViewCell(actions, getAllBuses));
+					}
+				});
 				
 				
-				LocalTime end = LocalTime.of(23, 00);
+				thread2.start();
+			}
+		};
+
+		routeExecutor = Executors.newScheduledThreadPool(1);
+		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
+	}
+	
+	//Simple algorithm which determines actions
+	public void startActions() {
+		Runnable Runnable = new Runnable() {
+			public void run() {
+				Task<Void> task2 = new ActionsService(busses, routes);
+				Thread thread2 = new Thread(task2);
+				thread2.setDaemon(true);
 				
-				for (Route route : routes) {
-					//System.out.println(route.routeName());
-					LocalTime nextStart = LocalTime.of(6, 0);
-					
-					LocalTime interval = route.startIntervals();
-					
-					while(nextStart.isBefore(end)) {
-						nextStart = nextStart.plusHours(interval.getHour());
-						nextStart = nextStart.plusMinutes(interval.getMinute());
-						//System.out.println(nextStart);
-						/*for (Bus bus : buses) {
-							if(bus.currentTerminalId() == route.startTerminalId() && bus.battery() > route.batteryUsage()) {
-								
-							}
-						}*/
-					}					
-					
-				}
+				thread2.start();
 			}
 		};
 
 		routeExecutor = Executors.newScheduledThreadPool(1);
 		routeExecutor.scheduleAtFixedRate(Runnable, 5, 60, TimeUnit.SECONDS);
-	}
-	
-	public void startActions() {
-		
 	}
 
 
@@ -352,9 +384,7 @@ public class MainMenuController implements Initializable  {
 	public void initialize(URL location, ResourceBundle resources) {
 		displayBusSelection();
 		displayRoutes();
-		
-		 
-		//Not working
+		startActions();
 		displayActions();
 	}	
 	

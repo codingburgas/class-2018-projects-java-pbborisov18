@@ -29,7 +29,7 @@
       <VBox maxWidth="-Infinity" minWidth="-Infinity" prefWidth="640.0" HBox.hgrow="ALWAYS">
          <children>
             <Label focusTraversable="false" text="Actions" />
-            <ListView focusTraversable="false" VBox.vgrow="ALWAYS" />
+            <ListView fx:id="actionListView" focusTraversable="false" VBox.vgrow="ALWAYS" />
          </children>
       </VBox>
       <VBox maxWidth="-Infinity" prefHeight="1080.0" prefWidth="640.0" HBox.hgrow="ALWAYS">
