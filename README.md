@@ -28,13 +28,13 @@ The aim of the project is to organise a city's electric public transport with Ja
 * Break a bus
 * Fix a bus
 * Reroute a route
+* Custom algorithm which calculates buses schedule
 
 ## Project status
 **In progress**
 
 ## Room for Improvement
 #### To Do:
-* Custom algorithm which calculates buses schedule
 * Implement unit tests
 * Style the whole application using css
 * Dark/White theme
