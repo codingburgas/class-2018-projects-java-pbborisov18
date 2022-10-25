@@ -44,9 +44,9 @@ public class SelectAllNotBrokenBusesService extends Task<ObservableList<Bus>> {
 					int battery = rs.getInt("Battery");
 					int delay = rs.getInt("Delay");
 
-					Bus a = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
+					Bus bus = new Bus(busId, busName, currentRouteId, currentTerminalId, broken, charging, battery, delay);
 					
-					busses.add(a);
+					busses.add(bus);
 				}
 			conn.close();	
 			} else {

@@ -5,13 +5,11 @@ import java.sql.ResultSet;
 import java.time.LocalTime;
 
 import database.ActionsQueries;
-import database.BusQueries;
 import database.EstablishConnection;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import models.Action;
-import models.Bus;
 
 public class SelectActionsService extends Task<ObservableList<Action>> {
 
@@ -22,9 +20,10 @@ public class SelectActionsService extends Task<ObservableList<Action>> {
 
 		if(conn.isValid(0)) {
 			ResultSet rs = ActionsQueries.selectAllActions(conn);
-
+			
+			
 			while(rs.next()) {
-
+				
 				int busId = rs.getInt("BusId");
 				LocalTime time = rs.getTime("Time").toLocalTime();
 				String action = rs.getString("Text");
@@ -38,6 +37,8 @@ public class SelectActionsService extends Task<ObservableList<Action>> {
 		}
 		
 		conn.close();
+		
+		
 		
 		return actions;
 	}

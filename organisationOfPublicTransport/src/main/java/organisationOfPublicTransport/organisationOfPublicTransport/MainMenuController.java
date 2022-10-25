@@ -14,6 +14,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.LoadingCache;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,12 +26,18 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ProgressIndicator;
 import javafx.scene.image.Image;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.StringConverter;
@@ -42,6 +50,7 @@ import services.SelectActionsService;
 import services.SelectAllNotBrokenBusesService;
 import services.SelectAllRoutesService;
 import services.SelectAllTerminalService;
+import services.UpdateBusesBasedOnPredictionService;
 
 public class MainMenuController implements Initializable  {
 	
@@ -62,50 +71,67 @@ public class MainMenuController implements Initializable  {
 	/* ACTIONS MENU */
 	@FXML
 	private ListView<Action> actionListView;
+	@FXML
+	private VBox actionsVBox;
 	
-	private ObservableList<Bus> busses; 
-	private ObservableList<Terminal> terminals; 
-	private ObservableList<Bus> getAllBuses;
-	private ObservableList<Route> routes;
-	private ObservableList<Action> actions;
+	@FXML
+	private Circle statusCircle;
+	@FXML
+	private Label informationStatusText;
+	
+	private ObservableList<Bus> busses = FXCollections.observableArrayList(); 
+	private ObservableList<Terminal> terminals = FXCollections.observableArrayList(); 
+	private ObservableList<Bus> getAllBuses = FXCollections.observableArrayList();
+	private ObservableList<Route> routes = FXCollections.observableArrayList();
+	private ObservableList<Action> actions = FXCollections.observableArrayList();
 	
 	//has to be initialized because I can't shutdown null
-	//used for refreshing the bus menu every 10 secs
+	//used for refreshing the bus, route and actions menu every 10 secs
 	ScheduledExecutorService busExecutor = Executors.newScheduledThreadPool(1);
 	ScheduledExecutorService routeExecutor = Executors.newScheduledThreadPool(1);
 	ScheduledExecutorService actionsExecutor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService updateActionsExecutor = Executors.newScheduledThreadPool(1);
+	ScheduledExecutorService displayActionsExecutor = Executors.newScheduledThreadPool(1);
+	
+	ProgressIndicator loadingCircle = new ProgressIndicator();
+	
+	//Executes when the main menu is loaded
+	@Override
+	public void initialize(URL location, ResourceBundle resources) {
+		displayBusSelection();
+		displayRoutes();
+		updateActions();
+		//busStatusUpdate();
+	}
 	
 	/* BUS */
 	
-	//Executes every 10 secs looking for changes in the busses list
+	//Executes every 5 secs looking for changes in the busses list
 	//If changes are found they are displayed
-	public void displayBusses(int id, boolean flag) {	
+	public void displayBusses(int id, boolean allFlag) {	
 		Runnable runnable = new Runnable() {
-		    public void run() {
-		    	busses = FXCollections.observableArrayList();
-		    	
-		    	Task<ObservableList<Bus>> task = new SelectAllNotBrokenBusesService(id, flag);
+			public void run() {
+
+				Task<ObservableList<Bus>> task = new SelectAllNotBrokenBusesService(id, allFlag);
 				Thread thread = new Thread(task);
 				thread.setDaemon(true);
-				
-				task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						busses = task.getValue();
-						busListView.setItems(busses);					
-						busListView.setCellFactory(busses -> new BusListViewCell());
-					}
-		        });
-				
+
+				task.setOnSucceeded((WorkerStateEvent event) -> {
+					busses = task.getValue();
+					busListView.setItems(busses);					
+					busListView.setCellFactory(busses -> new BusListViewCell());
+
+				});
+
 				thread.start();
-				
-		    }
+
+			}
 		};
-		
+
 		//schedules a task to be done every 10 secs
 		busExecutor = Executors.newScheduledThreadPool(1);
-		busExecutor.scheduleAtFixedRate(runnable, 0, 10, TimeUnit.SECONDS);
-		
+		busExecutor.scheduleAtFixedRate(runnable, 0, 5, TimeUnit.SECONDS);
+
 	}
 	
 	//Displays the terminals in the combo box in the correct way
@@ -114,44 +140,45 @@ public class MainMenuController implements Initializable  {
 		Thread thread = new Thread(task);
 		thread.setDaemon(true);
 
-		task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				//assigns the terminals we got from the query
-				terminals = task.getValue();
-				terminals.add(new Terminal(0, "All"));
-				
-				StringConverter<Terminal> converter = new StringConverter<Terminal>() {
-					@Override
-					public String toString(Terminal object) {
-						return object.terminalName();
-					}
+		task.setOnSucceeded((WorkerStateEvent event) -> {
+			//assigns the terminals we got from the query
 
-					@Override
-					public Terminal fromString(String string) {
-						return null;
-					}
-				};
+			terminals = task.getValue();
+			terminals.add(new Terminal(0, "All"));
 
-				busTerminalComboBox.setConverter(converter);
-				busTerminalComboBox.setItems(terminals);
-				busTerminalComboBox.getSelectionModel().selectLast();
-				busTerminalComboBox.setCellFactory(terminals -> new BusComboBoxCell());
-			}
+			StringConverter<Terminal> converter = new StringConverter<Terminal>() {
+				@Override
+				public String toString(Terminal object) {
+					return object.terminalName();
+				}
+
+				@Override
+				public Terminal fromString(String string) {
+					return null;
+				}
+			};
+
+			busTerminalComboBox.setConverter(converter);
+			busTerminalComboBox.setItems(terminals);
+			busTerminalComboBox.getSelectionModel().selectLast();
+			busTerminalComboBox.setCellFactory(terminals -> new BusComboBoxCell());
+
 		});
 		
-		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
-			@Override
-			public void handle(WorkerStateEvent event) {
-				displayBusSelection();
-			}
-		});
+//		task.setOnFailed(new EventHandler<WorkerStateEvent>() {
+//			@Override
+//			public void handle(WorkerStateEvent event) {
+//				displayBusSelection();
+//			}
+//		});
 		
 		thread.start();
 	}	
 	
-	//Waits for a change in the combo box
-	public void busSelectionChangeListener(ActionEvent event) {
+	
+	
+	//Makes the buses change (almost) instant
+	public void busSelectionChangeListener() {
 		//kills the previous threadpool which updates the bus menu
 		busExecutor.shutdownNow();
 		//a new threadpool is created inside
@@ -175,21 +202,28 @@ public class MainMenuController implements Initializable  {
 			stage.initOwner(brokenBusButton.getScene().getWindow());
 			//stage.resizableProperty().setValue(false);
 			//stage.initStyle(StageStyle.TRANSPARENT);
-			//stage.initModality(Modality.APPLICATION_MODAL);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			Image icon = new Image(getClass().getResourceAsStream("/icon/busLogo.png"));
+	        stage.getIcons().add(icon);
+			
 			stage.show();
 
-			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
-	            if(!stage.isFocused())
-	                Platform.runLater(() -> stage.close());
-	        });
+			//Doesn't ignore children windows
+//			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
+//	            if(!stage.isFocused())
+//	            	updateActionsExecutor.shutdown();
+//					updateActions();
+//				
+//					
+//	                Platform.runLater(() -> stage.close());
+//	        });		
 			
 			//Might be useful later when I focus on UI
-			/*if(!stage.isFocused()) {
-				stage.hide();
-			}*/
+//			if(!stage.isFocused()) {
+//				stage.close();
+//			}
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -208,9 +242,17 @@ public class MainMenuController implements Initializable  {
 			//stage.resizableProperty().setValue(false);
 			//stage.initStyle(StageStyle.TRANSPARENT);
 			stage.initModality(Modality.APPLICATION_MODAL);
-			stage.show();
+			Image icon = new Image(getClass().getResourceAsStream("/icon/busLogo.png"));
+	        stage.getIcons().add(icon);
 			
-			//When there are no buses a popup appears telling the user that -> window loses focus and closes together with its child
+	        stage.show();
+			
+//			updateActionsExecutor.shutdown();
+//			updateActions();
+//			
+//			displayBusSelection();
+			
+			//When there are no buses a pop-up appears telling the user that -> window loses focus and closes together with its child
 			/*stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
 	            if(!stage.isFocused())
 	                Platform.runLater(() -> stage.close());
@@ -222,7 +264,7 @@ public class MainMenuController implements Initializable  {
 			}*/
 
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			
 			e.printStackTrace();
 		}
 		
@@ -251,42 +293,33 @@ public class MainMenuController implements Initializable  {
 				
 				//When all the buses are in the Observable list
 				//Then all the routes are gotten from the db and placed in the cells together with the bus info
-				task2.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						
-						getAllBuses = task2.getValue();
-						cdLatch.countDown();
-						
-						
-						task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-							@Override
-							public void handle(WorkerStateEvent event) {
-								routes = task.getValue();
-								routeListView.setItems(routes);					
-								routeListView.setCellFactory(routes -> new RouteListViewCell(getAllBuses));
-							}
-				        });
-						
-						
-					}
-		        });
-				
-				task2.setOnFailed(new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						task2.cancel();
-						cdLatch.countDown();
-					}
+				task2.setOnSucceeded((WorkerStateEvent event) -> {
+
+					getAllBuses = task2.getValue();
+					cdLatch.countDown();
+
+
+					task.setOnSucceeded((WorkerStateEvent event2) -> {
+						routes = task.getValue();
+						routeListView.setItems(routes);					
+						routeListView.setCellFactory(routes -> new RouteListViewCell(getAllBuses));
+					});
+
+
+
 				});
-				
+
+				task2.setOnFailed((WorkerStateEvent event) -> {
+					task2.cancel();
+					cdLatch.countDown();
+				});
+
 				
 				thread2.start();
 				
 				try {
 					cdLatch.await();
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				
@@ -296,7 +329,7 @@ public class MainMenuController implements Initializable  {
 		};
 		
 		routeExecutor = Executors.newScheduledThreadPool(1);
-		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
+		routeExecutor.scheduleAtFixedRate(Runnable, 0, 5, TimeUnit.SECONDS);
 	}
 
 	//If the reroute button is pressed
@@ -310,15 +343,21 @@ public class MainMenuController implements Initializable  {
 			stage.initOwner(brokenBusButton.getScene().getWindow());
 			//stage.resizableProperty().setValue(false);
 			//stage.initStyle(StageStyle.TRANSPARENT);
-			//stage.initModality(Modality.APPLICATION_MODAL);
+			stage.initModality(Modality.APPLICATION_MODAL);
+			Image icon = new Image(getClass().getResourceAsStream("/icon/busLogo.png"));
+	        stage.getIcons().add(icon);
+			
 			stage.show();
 			
 			
-			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
-	            if(!stage.isFocused())
-	                Platform.runLater(() -> stage.close());
-	        });
+//			stage.focusedProperty().addListener((ov, onHidden, onShown) -> {
+//	            if(!stage.isFocused())
+//	                Platform.runLater(() -> stage.close());
+//	        });
 			
+			
+//			updateActionsExecutor.shutdown();
+//			updateActions();
 			//Might be useful later when I focus on UI
 			/*if(!stage.isFocused()) {
 				stage.hide();
@@ -337,56 +376,113 @@ public class MainMenuController implements Initializable  {
 	public void displayActions() {
 		Runnable Runnable = new Runnable() {
 			public void run() {
-				Task<ObservableList<Action>> task2 = new SelectActionsService();
-				Thread thread2 = new Thread(task2);
-				thread2.setDaemon(true);
+				Task<ObservableList<Action>> task = new SelectActionsService();
+				Thread thread = new Thread(task);
+				thread.setDaemon(true);
 				
-				task2.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-					@Override
-					public void handle(WorkerStateEvent event) {
-						// TODO Auto-generated method stub
-						actions = task2.getValue();
-						actionListView.setItems(actions);			
-						
-						
-						actionListView.setCellFactory(busses -> new ActionListViewCell(actions, getAllBuses));
-					}
+				task.setOnSucceeded((WorkerStateEvent event) -> {
+					actions = task.getValue();
+					actionListView.setItems(actions);
+					statusCircle.setFill(Color.GREEN);
+					informationStatusText.setText("");
+
+					actionListView.setCellFactory(actionListView -> new ActionListViewCell(actions, getAllBuses));
+				});
+
+				task.setOnFailed((WorkerStateEvent event) -> {
+					statusCircle.setFill(Color.ORANGE);
+					informationStatusText.setText("Failed to display!");
 				});
 				
 				
-				thread2.start();
+				
+				
+				thread.start();
 			}
 		};
 
-		routeExecutor = Executors.newScheduledThreadPool(1);
-		routeExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
+		displayActionsExecutor = Executors.newScheduledThreadPool(1);
+		displayActionsExecutor.scheduleAtFixedRate(Runnable, 0, 5, TimeUnit.SECONDS);
 	}
 	
 	//Simple algorithm which determines actions
-	public void startActions() {
+	public void updateActions() {
 		Runnable Runnable = new Runnable() {
 			public void run() {
-				Task<Void> task2 = new ActionsService(busses, routes);
-				Thread thread2 = new Thread(task2);
-				thread2.setDaemon(true);
+				//enableLoadingCircle();
 				
-				thread2.start();
+				Task<Void> task = new ActionsService();
+				Thread thread = new Thread(task);
+				thread.setDaemon(true);
+
+				task.setOnSucceeded((WorkerStateEvent event) -> {
+					statusCircle.setFill(Color.YELLOW);
+					//disableLoadingCircle();
+
+					informationStatusText.setText("Successfull execution of the algorithm!");
+					
+					displayActionsExecutor.shutdown();
+					
+					displayActions();
+				});
+
+				task.setOnFailed((WorkerStateEvent event) -> {
+					statusCircle.setFill(Color.RED);
+					informationStatusText.setText("There aren't enough buses active!");
+					disableLoadingCircle();
+
+					System.out.println(task.getException());
+					displayActionsExecutor.shutdown();
+				});
+
+				thread.start();	
 			}
 		};
 
-		routeExecutor = Executors.newScheduledThreadPool(1);
-		routeExecutor.scheduleAtFixedRate(Runnable, 5, 60, TimeUnit.SECONDS);
+		updateActionsExecutor = Executors.newScheduledThreadPool(1);
+		updateActionsExecutor.scheduleAtFixedRate(Runnable, 0, 10, TimeUnit.SECONDS);
 	}
+	
 
-
-	//Executes when the main menu is loaded
-	@Override
-	public void initialize(URL location, ResourceBundle resources) {
-		displayBusSelection();
-		displayRoutes();
-		startActions();
-		displayActions();
-	}	
+	
+	/* Additional */
+	//Update bus info from actions
+//	public void busStatusUpdate() {
+//		Runnable Runnable = new Runnable() {
+//			public void run() {
+//				Task<Void> task = new UpdateBusesBasedOnPredictionService();
+//				Thread thread= new Thread(task);
+//				thread.setDaemon(true);
+//
+//				task.setOnSucceeded((WorkerStateEvent event) -> {
+//					System.out.println("what");	
+//				});
+//
+//				task.setOnFailed((WorkerStateEvent event) -> {
+//					System.out.println("what2");
+//				}); 
+//
+//				thread.start();	
+//			}
+//
+//		};
+//
+//		ScheduledExecutorService busStatusExecutor = Executors.newScheduledThreadPool(1);
+//		busStatusExecutor.scheduleAtFixedRate(Runnable, 0, 60, TimeUnit.SECONDS);
+//	}
+	
+	//Loading circle
+	public void enableLoadingCircle() {
+		loadingCircle.setProgress(-1);
+		loadingCircle.setVisible(true);
+		actionsVBox.getChildren().add(1, loadingCircle);
+	}
+	
+	public void disableLoadingCircle() {
+		actionsVBox.getChildren().remove(loadingCircle);
+	}
+	
+		
 	
 	
 }

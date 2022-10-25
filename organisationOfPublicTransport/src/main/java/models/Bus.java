@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public class Bus {
 	
-	public int busId;
-	public String busName; 
-	public int currentRouteId; 
-	public int currentTerminalId; 
-	public Boolean broken; 
-	public Boolean charging; 
-	public int battery; 
-	public int delay;
+	private int busId;
+	private String busName; 
+	private int currentRouteId; 
+	private int currentTerminalId; 
+	private Boolean broken; 
+	private Boolean charging; 
+	private int battery; 
+	private int delay;
 	
 	public Bus(int busId, String busName, int currentRouteId, int currentTerminalId, boolean broken,
 			boolean charging, int battery, int delay) {

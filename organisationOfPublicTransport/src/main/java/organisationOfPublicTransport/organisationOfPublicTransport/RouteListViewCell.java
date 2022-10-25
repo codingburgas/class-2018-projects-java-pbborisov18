@@ -21,12 +21,6 @@ public class RouteListViewCell extends ListCell<Route>{
 	private Label activeBusses;
 	
 	@FXML
-	private Label nextBusToStartRoute;
-	
-	@FXML
-	private Label nextBusToArrive;
-	
-	@FXML
 	private AnchorPane anchorPane;
 	
 	private FXMLLoader mLLoader;
@@ -61,16 +55,14 @@ public class RouteListViewCell extends ListCell<Route>{
 
 	    	 routeName.setText(route.routeName());
 
-	    	 ArrayList<String> busIds = new ArrayList<String>();
+	    	 ArrayList<String> busNames = new ArrayList<String>();
 
 	    	 for (Bus bus : buses) {
 	    		 if(bus.getCurrentRouteId() == route.routeId()) {
-	    			 busIds.add(Integer.toString(bus.getBusId()));
+	    			 busNames.add(bus.getBusName());
 	    		 }
 	    	 }
-	    	 activeBusses.setText("Current Buses Active: " +  busIds.toString());
-	    	 //nextBusToStartRoute.setText("test");
-	    	 //nextBusToArrive.setText("test");
+	    	 activeBusses.setText("Current Buses Active: " +  busNames);
 
 	    	 setText(null);
 	    	 setGraphic(anchorPane);

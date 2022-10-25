@@ -5,7 +5,6 @@ import java.sql.Connection;
 import database.BusQueries;
 import database.EstablishConnection;
 import javafx.concurrent.Task;
-import models.Bus;
 
 public class DeleteABusService extends Task<Void> {
 

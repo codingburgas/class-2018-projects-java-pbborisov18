@@ -129,7 +129,6 @@ public class BrokenBusMenuController {
 			try {
 				scene = new Scene(fxmlLoader.load());
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -143,8 +142,13 @@ public class BrokenBusMenuController {
     		Thread thread = new Thread(task);
     		thread.setDaemon(true);
     		
+    		task.setOnSucceeded((WorkerStateEvent event2) -> {
+    			App.dialogs("Succesfully updated!", "Successfully updated!", AlertType.INFORMATION, no.getScene());
+    		});
     		
-    		App.dialogs("Succesfully updated!", "Successfully updated!", AlertType.INFORMATION, no.getScene());
+    		task.setOnFailed((WorkerStateEvent event2) -> {
+    			App.dialogs("Failed to update!", "Failed to update!", AlertType.INFORMATION, no.getScene());
+    		});
     		
     		stage.close();
     		

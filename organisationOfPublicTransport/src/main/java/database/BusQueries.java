@@ -4,11 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.concurrent.CountDownLatch;
+import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import models.Bus;
 
 public class BusQueries {
@@ -62,15 +61,21 @@ public class BusQueries {
 	}
 	
 	public static void updateBreakABusQueryById(int busId, Connection conn) {
-		String query = 	"UPDATE dbo.Bus " + 
+		String query = 	"UPDATE dbo.BusOriginal " + 
+						"SET Broken = 'True' " +
+						"WHERE BusId = ? " +
+						"UPDATE dbo.Bus " +
 						"SET Broken = 'True' " +
 						"WHERE BusId = ? ;";
+		
 		
 		PreparedStatement stmt = null;
 		
 		try {
 			stmt = conn.prepareStatement(query);
 			stmt.setInt(1, busId);
+			stmt.setInt(2, busId);
+			
 			int count = stmt.executeUpdate();
 			
 			if(count > 0 ) {
@@ -105,16 +110,21 @@ public class BusQueries {
 	}
 	
 	public static void updateFixABusQuery(int busId, int terminalId, Connection conn) {
-		String query = 	"UPDATE dbo.Bus " + 
-						"SET Broken = 'False', CurrentTerminalId = ? " +
+		
+		//Have to "fix" the query because of lack of planning
+		//Current terminal has to be excluded otherwise the algorithm will fuck up
+		//If you decide to update CurrentTerminalId like originally planned the algorithm
+		//will start with the bus at that terminal (might be a wanted effect in the future)
+		String query = 	"Update dbo.BusOriginal " +
+						"SET Broken = 'False' " /*, CurrentTerminalId = ? "*/ +
 						"WHERE BusId = ? ;";
 
 		PreparedStatement stmt = null;
 
 		try {
 			stmt = conn.prepareStatement(query);
-			stmt.setInt(1, terminalId);
-			stmt.setInt(2, busId);
+			//stmt.setInt(1, terminalId);
+			stmt.setInt(1, busId);
 			
 			int count = stmt.executeUpdate();
 
@@ -127,6 +137,66 @@ public class BusQueries {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public static int[] updateAllBuses(List<Bus> buses, Connection conn) {
+		
+		String query = 	"UPDATE dbo.Bus " +  
+							"SET BusName = ? ," +
+							"CurrentRouteId = ? ," +
+							"CurrentTerminalId = ? ,"+ 
+							"Broken = ? ," + 
+							"Charging = ? ," + 
+							"Battery = ? ,"+ 
+							"Delay = ? " +
+						"WHERE BusId = ? ;";
+		
+		
+		int[] success;
+		
+		try {
+			PreparedStatement stmt = conn.prepareStatement(query);
+			
+			int counter = 0;
+			
+			for (Bus bus : buses) {
+
+				stmt.setNString(1, bus.getBusName());
+				
+				if(bus.getCurrentRouteId() == 0) {
+					stmt.setNull(2, Types.INTEGER);
+				} else {
+					stmt.setInt(2, bus.getCurrentRouteId());
+				}
+				
+				if(bus.getCurrentTerminalId() == 0) {
+					stmt.setNull(3, Types.INTEGER);
+				} else {
+					stmt.setInt(3, bus.getCurrentTerminalId());	
+				}
+				
+				stmt.setBoolean(4, bus.isBroken());
+				stmt.setBoolean(5, bus.isCharging());
+				stmt.setInt(6, bus.getBattery());
+				stmt.setInt(7, bus.getDelay());
+				
+				stmt.setInt(8, bus.getBusId());
+
+				stmt.addBatch();
+
+				counter++;
+			}
+			
+			success = new int[counter+1];	
+			stmt.executeBatch();
+			
+			return success;		
+			
+		} catch(SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 	
 	public static int insertAddABus(Bus bus, Connection conn) {
@@ -174,6 +244,21 @@ public class BusQueries {
 			e.printStackTrace();
 			return 1;
 		}
+	}
+	
+	//Simplest way to solve bad planning
+	public static ResultSet selectBusQueryFromBusOriginal(Connection conn) throws SQLException {
+		
+		String query = "SELECT * " + "FROM BusOriginal " + "WHERE Broken = 'False'";
+
+		PreparedStatement stmt;
+			
+		stmt = conn.prepareStatement(query);
+		
+		ResultSet rs = stmt.executeQuery();
+		
+		return rs;
+		
 	}
 	
 	

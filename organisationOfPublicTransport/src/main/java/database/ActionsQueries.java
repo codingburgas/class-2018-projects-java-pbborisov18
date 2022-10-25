@@ -13,6 +13,7 @@ public class ActionsQueries {
 	
 	public static int[] createActions(ArrayList<Action> actions, Connection conn) {
 		String executeBeforeQuery = "DELETE FROM Actions";
+		
 		String query = 	"DBCC CHECKIDENT (Actions, RESEED, 0)" +
 						"DBCC CHECKIDENT (Actions)" +
 						"INSERT INTO dbo.Actions VALUES (?, ?, ?);";
@@ -40,6 +41,7 @@ public class ActionsQueries {
 			}
 			success = new int[counter+1];	
 			stmt.executeBatch();
+			
 			return success;		
 			
 		} catch(SQLException e) {
