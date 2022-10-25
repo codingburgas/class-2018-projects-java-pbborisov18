@@ -13,6 +13,7 @@ The aim of the project is to organise a city's electric public transport with Ja
 * Java 17.0.2
 * JavaFX (OpenJFX) 17.0.1
 * Apache Maven 3.8.5
+* Google Guava 31.1
 
 ## Launch
 1. Clone the repository
@@ -28,13 +29,13 @@ The aim of the project is to organise a city's electric public transport with Ja
 * Break a bus
 * Fix a bus
 * Reroute a route
+* Custom algorithm which calculates buses schedule
 
 ## Project status
 **In progress**
 
 ## Room for Improvement
 #### To Do:
-* Custom algorithm which calculates buses schedule
 * Implement unit tests
 * Style the whole application using css
 * Dark/White theme
