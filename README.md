@@ -1,5 +1,6 @@
 ## Contents
 * [General Information](#general-information)
+* [Demo](#demo)
 * [Technologies](#technologies)
 * [Launch](#launch)
 * [Features](#features)
@@ -8,6 +9,9 @@
 
 # General Information
 The aim of the project is to organise a city's electric public transport with Java, JavaFX and MSSQL. It can break and fix busses. Re-route a route. Displays information about the buses and routes. Created for a school project. 
+
+## Demo
+**Coming soon!**
 
 ## Technologies
 * Java 17.0.2
@@ -32,7 +36,7 @@ The aim of the project is to organise a city's electric public transport with Ja
 * Custom algorithm which calculates buses schedule
 
 ## Project status
-**In progress**
+**Discontinued**
 
 ## Room for Improvement
 #### To Do:
