@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="anchorPane" prefHeight="75.0" prefWidth="348.0" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <Label fx:id="routeName" layoutX="14.0" layoutY="13.0" text="Route name" />
+      <Label fx:id="activeBusses" layoutX="14.0" layoutY="40.0" text="Current buses active:" />
+   </children>
+</AnchorPane>

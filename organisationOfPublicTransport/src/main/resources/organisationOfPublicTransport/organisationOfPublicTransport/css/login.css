@@ -1,0 +1,41 @@
+/*
+60% - color #1F75CC
+30% - color #D1EFFF
+10% - color #050517
+
+#F6F7EB - white (looking at as the 30% color)
+
+#FCFCFC - white (looking at as the 30% color)
+
+prob a better 10% color
+60% - color #1F75CC
+30% - color #F6F7EB
+10% - color #1B1B49
+*/
+
+
+
+#vBoxLogin{
+	-fx-background-color: #1F75CC;
+}
+
+#txtPassword, #txtUsername{
+	-fx-background-color: #F6F7EB;
+}
+
+#textLoginPage .text{
+	-fx-font-family: Ariel;
+	-fx-font-size: 30;
+	-fx-text-fill: #B7EEFF;
+	-fx-stroke: red;
+    -fx-stroke-width: 1px;
+}
+
+#loginButton{
+	-fx-background-color: #1B1B49;
+	-fx-text-fill: white;
+}
+
+#loading{
+	-fx-progress-color: #1B1B49;
+}
